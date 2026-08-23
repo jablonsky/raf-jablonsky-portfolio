@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Packet Insight case study for Raf Jablonsky OT Network Engineer portfolio: scientific PCAP analytics for reliable and secure networks.">
+  <title>Packet Insight | Raf Jablonsky</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
+    <div class="container py-2">
+      <a class="navbar-brand fw-bold" href="../index.html">Raf Jablonsky<span class="brand-dot">.</span></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+          <li class="nav-item"><a class="nav-link" href="../index.html#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="../profile.html">Profile</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#capabilities">Capabilities</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#projects">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#strategy">Strategy</a></li>
+          <li class="nav-item"><a class="nav-link" href="../docs.html">Docs</a></li>
+          <li class="nav-item"><a class="btn btn-primary rounded-pill px-4" href="../index.html#contact">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <header class="project-hero packet-hero">
+    <div class="container">
+      <a class="text-white-50 text-decoration-none" href="../index.html#projects">← Back to projects</a>
+      <div class="row align-items-center g-5 mt-2">
+        <div class="col-lg-7">
+          <span class="badge rounded-pill text-bg-light mb-3">Scientific PCAP analytics</span>
+          <h1 class="display-4 fw-bold lh-1 text-white mb-4">Packet Insight</h1>
+          <p class="lead text-white-75 mb-4">Transform packet captures into structured engineering cases, measurable insights, and professional network reports.</p>
+          <div class="d-flex flex-column flex-sm-row gap-3 mb-4">
+            <a class="btn btn-light btn-lg rounded-pill px-4" href="#mission">Read project mission</a>
+            <a class="btn btn-outline-light btn-lg rounded-pill px-4" href="#capabilities">Explore capabilities</a>
+          </div>
+          <div class="d-flex flex-wrap gap-2">
+            <span class="badge rounded-pill text-bg-dark border border-light-subtle">Python</span>
+            <span class="badge rounded-pill text-bg-dark border border-light-subtle">Flask</span>
+            <span class="badge rounded-pill text-bg-dark border border-light-subtle">SQLAlchemy</span>
+            <span class="badge rounded-pill text-bg-dark border border-light-subtle">Pandas</span>
+            <span class="badge rounded-pill text-bg-dark border border-light-subtle">PCAP workflow</span>
+            <span class="badge rounded-pill text-bg-dark border border-light-subtle">Statistical analysis</span>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="packet-visual shadow-lg">
+            <div class="packet-window-bar"><span></span><span></span><span></span></div>
+            <div class="packet-grid">
+              <div class="packet-node active">PCAP</div>
+              <div class="packet-line"></div>
+              <div class="packet-node">Case</div>
+              <div class="packet-line"></div>
+              <div class="packet-node">Insights</div>
+            </div>
+            <div class="packet-metrics">
+              <div><strong>TCP</strong><span>sessions</span></div>
+              <div><strong>DNS</strong><span>queries</span></div>
+              <div><strong>ARP</strong><span>events</span></div>
+              <div><strong>Report</strong><span>ready</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="section-padding">
+    <div class="container">
+      <div class="row g-4 align-items-start">
+        <aside class="col-lg-3">
+          <div class="docs-card docs-sidebar p-3">
+            <a href="#mission">Mission</a>
+            <a href="#problem">Problem</a>
+            <a href="#capabilities">Capabilities</a>
+            <a href="#architecture">Workflow</a>
+            <a href="#security">Security value</a>
+            <a href="#why">Why I am building this</a>
+            <a href="#roadmap">Roadmap</a>
+          </div>
+        </aside>
+        <section class="col-lg-9">
+          <article class="docs-card docs-content p-4 p-lg-5">
+            <section id="mission">
+              <p class="section-label">Project mission</p>
+              <h2>From packet captures to engineering evidence.</h2>
+              <p class="fs-5">Packet Insight is a Flask and Python-based scientific PCAP analytics platform designed to transform packet captures into structured engineering cases, statistical insights, and professional network investigation workflows.</p>
+              <p>It is built around privacy-first analysis, repeatable troubleshooting, and evidence-based networking. The goal is to make packet captures easier to manage, interpret, document, and explain.</p>
+              <div class="row g-3 my-4">
+                <div class="col-md-3"><div class="mini-stat"><strong>PCAP</strong><span>Evidence source</span></div></div>
+                <div class="col-md-3"><div class="mini-stat"><strong>Cases</strong><span>Structured workflow</span></div></div>
+                <div class="col-md-3"><div class="mini-stat"><strong>Stats</strong><span>Measurable insight</span></div></div>
+                <div class="col-md-3"><div class="mini-stat"><strong>Reports</strong><span>Professional output</span></div></div>
+              </div>
+            </section>
+
+            <hr class="my-5" id="problem">
+            <section>
+              <h2>The investigation problem</h2>
+              <p>Packet captures contain some of the most valuable evidence in networking and cybersecurity. Yet many investigations remain fragmented across Wireshark sessions, screenshots, disconnected notes, and manual reporting.</p>
+              <p>Packet Insight is designed to change that. Instead of simply opening packets manually, engineers can investigate traffic systematically using repeatable, evidence-based analysis methods.</p>
+              <div class="row g-3">
+                <div class="col-md-6"><div class="callout-card">Every capture becomes a case.</div></div>
+                <div class="col-md-6"><div class="callout-card">Every case can hold findings, metadata, notes, and reports.</div></div>
+                <div class="col-md-6"><div class="callout-card">Every protocol view can support troubleshooting evidence.</div></div>
+                <div class="col-md-6"><div class="callout-card">Every result can support network reliability and security decisions.</div></div>
+              </div>
+            </section>
+
+            <hr class="my-5" id="capabilities">
+            <section>
+              <h2>Core capabilities</h2>
+              <div class="row g-4 mt-1">
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Private PCAP workspaces</h3><p>Secure case-based upload system with private-by-default packet capture storage and controlled investigation context.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Engineering case management</h3><p>Track investigations using structured cases with metadata, timestamps, notes, observations, and status management.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Protocol and traffic analysis</h3><p>Analyse TCP, UDP, DNS, ARP, ICMP, ports, services, retransmissions, and network behaviour patterns.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Python data pipelines</h3><p>Convert packet captures into structured datasets for scalable analysis using Python, Pandas, and Parquet-style workflows.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Statistical network insights</h3><p>Apply scientific and statistical thinking to network reliability, performance, and behaviour analysis.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Professional reporting</h3><p>Generate report-ready summaries combining packet evidence, charts, findings, observations, and recommendations.</p></div></div>
+              </div>
+            </section>
+
+            <hr class="my-5" id="architecture">
+            <section>
+              <h2>Structured analysis workflow</h2>
+              <p>The platform concept follows a clear path from raw packet capture to structured technical evidence.</p>
+              <div class="workflow-grid mt-4">
+                <div><span>STEP 1</span><strong>Create case</strong><p>Start a private investigation workspace with metadata and purpose.</p></div>
+                <div><span>STEP 2</span><strong>Upload PCAP</strong><p>Add packet captures as controlled evidence, not scattered files.</p></div>
+                <div><span>STEP 3</span><strong>Parse traffic</strong><p>Extract protocols, hosts, ports, timing, sessions, and behaviour patterns.</p></div>
+                <div><span>STEP 4</span><strong>Analyse statistics</strong><p>Measure traffic characteristics and identify reliability or security signals.</p></div>
+                <div><span>STEP 5</span><strong>Record findings</strong><p>Capture observations, suspected causes, and engineering recommendations.</p></div>
+                <div><span>STEP 6</span><strong>Produce report</strong><p>Turn packet evidence into a clear report suitable for technical review.</p></div>
+              </div>
+            </section>
+
+            <hr class="my-5" id="security">
+            <section>
+              <h2>OT and Network Security relevance</h2>
+              <p>For OT and industrial networking, packet analysis is not only a troubleshooting skill. It supports visibility, baselining, reliability, and cyber-risk understanding.</p>
+              <ul>
+                <li><strong>Traffic baselining:</strong> understand normal communication patterns before deciding what is unusual.</li>
+                <li><strong>Protocol visibility:</strong> see what protocols, ports, services, and devices are actually communicating.</li>
+                <li><strong>Reliability analysis:</strong> investigate retransmissions, timing behaviour, and communication problems.</li>
+                <li><strong>Security investigation:</strong> support evidence-led review of suspicious or unexpected traffic.</li>
+                <li><strong>Professional communication:</strong> convert technical packet evidence into readable findings and reports.</li>
+              </ul>
+              <p>This project supports my Network Security Engineer strategy because it shows practical understanding of network evidence, data analysis, repeatable investigation methods, and security-focused thinking.</p>
+            </section>
+
+            <hr class="my-5" id="why">
+            <section>
+              <h2>Why I am building this</h2>
+              <p>Packet Insight combines several areas I care deeply about: network engineering, cybersecurity, industrial networking, Python development, scientific analysis, and evidence-based troubleshooting.</p>
+              <p>Packet captures are not only troubleshooting files. They are datasets, evidence, and engineering stories waiting to be understood.</p>
+              <p>The project represents my long-term goal of combining engineering thinking with modern data analysis to better understand how real networks behave.</p>
+            </section>
+
+            <hr class="my-5" id="roadmap">
+            <section>
+              <h2>Roadmap and next improvements</h2>
+              <div class="row g-4 mt-1">
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Project architecture page</h3><p>Document the Flask structure, database models, upload workflow, parsing pipeline, and reporting flow.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Feature documentation</h3><p>Describe private PCAP workspaces, case metadata, traffic analysis, and report generation in a user-friendly way.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Development log</h3><p>Track design decisions, technical problems, learning points, and improvements as the project develops.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Portfolio graphics</h3><p>Add screenshots, workflow graphics, and sample report visuals when the interface is ready for public presentation.</p></div></div>
+              </div>
+            </section>
+
+            <div class="contact-panel text-center mt-5">
+              <p class="section-label">Portfolio value</p>
+              <h2 class="section-title mx-auto">A practical bridge between packet evidence and network security insight.</h2>
+              <p class="text-secondary content-width mx-auto mt-3 mb-4">Packet Insight strengthens the portfolio by showing how Python, data analysis, and networking knowledge can support structured investigation in reliable and secure networks.</p>
+              <a class="btn btn-primary rounded-pill px-4" href="../docs.html#linkedin-plan">Connect to LinkedIn article plan</a>
+            </div>
+          </article>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer class="py-4 border-top bg-white">
+    <div class="container d-flex flex-column flex-md-row justify-content-between gap-2 text-secondary small">
+      <span>© 2026 Raf Jablonsky Portfolio</span>
+      <a class="text-secondary" href="../index.html">Back to homepage</a>
+    </div>
+  </footer>
+
+  <button class="back-to-top" type="button" aria-label="Back to top">↑ Top</button>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../script.js"></script>
+</body>
+</html>

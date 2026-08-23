@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Engineering Change Request Platform case study for Raf Jablonsky OT Network Engineer portfolio.">
+  <title>Engineering Change Request Platform | Raf Jablonsky</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
+    <div class="container py-2">
+      <a class="navbar-brand fw-bold" href="../index.html">Raf Jablonsky<span class="brand-dot">.</span></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+          <li class="nav-item"><a class="nav-link" href="../index.html#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="../profile.html">Profile</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#capabilities">Capabilities</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#projects">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#strategy">Strategy</a></li>
+          <li class="nav-item"><a class="nav-link" href="../docs.html">Docs</a></li>
+          <li class="nav-item"><a class="btn btn-primary rounded-pill px-4" href="../index.html#contact">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <header class="project-hero ecr-hero">
+    <div class="container">
+      <a class="text-white-50 text-decoration-none" href="../index.html#projects">← Back to projects</a>
+      <div class="row align-items-center g-5 mt-2">
+        <div class="col-lg-7">
+          <span class="badge rounded-pill text-bg-light mb-3">Active development • Governance MVP</span>
+          <h1 class="display-4 fw-bold lh-1 text-white mb-4">Engineering Change Request Platform</h1>
+          <p class="lead text-white-75 mb-4">A structured governance platform for technical change, approval, evidence, risk control, and verification across manufacturing and OT environments.</p>
+          <div class="d-flex flex-column flex-sm-row gap-3 mb-4">
+            <a class="btn btn-light btn-lg rounded-pill px-4" href="https://jablonsky.pythonanywhere.com/index" target="_blank" rel="noopener">Open live ECR platform</a>
+            <a class="btn btn-outline-light btn-lg rounded-pill px-4" href="#screenshots">View screenshots</a>
+          </div>
+          <div class="d-flex flex-wrap gap-2">
+            <span class="badge rounded-pill text-bg-dark border border-light-subtle">Python</span>
+            <span class="badge rounded-pill text-bg-dark border border-light-subtle">Flask</span>
+            <span class="badge rounded-pill text-bg-dark border border-light-subtle">SQLite</span>
+            <span class="badge rounded-pill text-bg-dark border border-light-subtle">Bootstrap</span>
+            <span class="badge rounded-pill text-bg-dark border border-light-subtle">Role-based access</span>
+            <span class="badge rounded-pill text-bg-dark border border-light-subtle">Audit trail</span>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="project-preview-card shadow-lg">
+            <img src="../assets/ecr/ecr-reports-dashboard-graphic.png" alt="Engineering Change Request Platform reports dashboard portfolio graphic">
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="section-padding">
+      <div class="container">
+        <div class="row g-4 align-items-start">
+          <aside class="col-lg-3">
+            <div class="docs-card docs-sidebar p-3">
+              <a href="#summary">Summary</a>
+              <a href="#problem">Problem</a>
+              <a href="#features">Features</a>
+              <a href="#screenshots">Screenshots</a>
+              <a href="#workflow">Workflow</a>
+              <a href="#security">OT security value</a>
+              <a href="#roadmap">Roadmap</a>
+            </div>
+          </aside>
+          <section class="col-lg-9">
+            <article class="docs-card docs-content p-4 p-lg-5" id="summary">
+              <p class="section-label">Case study</p>
+              <h2>No uncontrolled change. No missing evidence.</h2>
+              <p class="fs-5">The Engineering Change Request platform is a portfolio project that demonstrates how manufacturing change-control discipline can be translated into a digital governance workflow for OT and technical environments.</p>
+              <p>It is designed for situations where a technical change should not be handled informally through email, memory, or disconnected notes. The system creates a controlled path from request to assessment, approval, implementation, verification, and closure.</p>
+
+              <div class="row g-3 my-4">
+                <div class="col-md-3"><div class="mini-stat"><strong>ECR</strong><span>Controlled change</span></div></div>
+                <div class="col-md-3"><div class="mini-stat"><strong>Evidence</strong><span>Attachments</span></div></div>
+                <div class="col-md-3"><div class="mini-stat"><strong>Roles</strong><span>Access control</span></div></div>
+                <div class="col-md-3"><div class="mini-stat"><strong>Reports</strong><span>Management view</span></div></div>
+              </div>
+
+              <hr class="my-5" id="problem">
+              <h2>The engineering problem</h2>
+              <p>Engineering changes often start with a good idea, but can become difficult to control when the evidence, ownership, approval, and close-out records are spread across emails, folders, or informal conversations.</p>
+              <p>The ECR platform gives each change a structured record so a technical team can answer the important questions:</p>
+              <div class="row g-3">
+                <div class="col-md-6"><div class="callout-card">What is changing?</div></div>
+                <div class="col-md-6"><div class="callout-card">Why is it needed?</div></div>
+                <div class="col-md-6"><div class="callout-card">Who approved it?</div></div>
+                <div class="col-md-6"><div class="callout-card">Was it verified?</div></div>
+              </div>
+
+              <hr class="my-5" id="features">
+              <h2>Current MVP features</h2>
+              <div class="row g-4 mt-1">
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Authenticated workspace</h3><p>User login, dashboard, personal ECR list, and clear separation between public explanation and signed-in work area.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Role-based access</h3><p>User, manager, admin, and super user roles, including a protected super-user account and role management screen.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Review governance</h3><p>Review queue for submitted ECRs, with priority, owner, status, and clear action buttons for review decisions.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Evidence and reporting</h3><p>File attachments, evidence counts, status summaries, priority summaries, recent activity, and average time to close.</p></div></div>
+              </div>
+
+              <hr class="my-5" id="screenshots">
+              <h2>Product screenshots</h2>
+              <p>These screenshots show the project as a working MVP, not just a concept. They provide evidence for the portfolio and can later be expanded with diagrams and technical notes.</p>
+              <div class="screenshot-gallery mt-4">
+                <figure class="screenshot-card large">
+                  <img src="../assets/ecr/ecr-reports-dashboard-graphic.png" alt="Framed portfolio graphic showing ECR reports dashboard">
+                  <figcaption><strong>ECR reports dashboard:</strong> management summary with workflow health, priority focus, evidence files, and closure metrics.</figcaption>
+                </figure>
+                <figure class="screenshot-card large">
+                  <img src="../assets/ecr/ecr-review-queue-graphic.png" alt="Framed portfolio graphic showing ECR governance review queue">
+                  <figcaption><strong>Governance review queue:</strong> reviewer workflow for filtering, prioritising, and opening active Engineering Change Requests.</figcaption>
+                </figure>
+                <figure class="screenshot-card">
+                  <img src="../assets/ecr/ecr-recent-activity-graphic.png" alt="Framed portfolio graphic showing recent Engineering Change Requests">
+                  <figcaption><strong>Recent activity:</strong> read-only snapshot of recently created ECRs with status, priority, date, and owner.</figcaption>
+                </figure>
+                <figure class="screenshot-card">
+                  <img src="../assets/ecr/ecr-reports-summary-graphic.png" alt="Framed portfolio graphic showing ECR reports summary">
+                  <figcaption><strong>Management summary:</strong> graphical overview of open requests, closed requests, evidence files, and average time to close.</figcaption>
+                </figure>
+              </div>
+
+              <hr class="my-5" id="workflow">
+              <h2>Controlled ECR workflow</h2>
+              <p>The platform is designed around a controlled path from request to closure. This is important because technical changes in industrial environments need traceability and accountability.</p>
+              <div class="workflow-grid mt-4">
+                <div><span>STEP 1</span><strong>Draft</strong><p>Request created but not yet submitted.</p></div>
+                <div><span>STEP 2</span><strong>Submitted</strong><p>Ready for review decision.</p></div>
+                <div><span>STEP 3</span><strong>Under Review</strong><p>Reviewer assessment in progress.</p></div>
+                <div><span>STEP 4</span><strong>Approved / Rejected</strong><p>Controlled decision before implementation.</p></div>
+                <div><span>STEP 5</span><strong>Implemented</strong><p>Approved technical work completed.</p></div>
+                <div><span>STEP 6</span><strong>Verification Pending</strong><p>Evidence and close-out confirmation required.</p></div>
+                <div><span>STEP 7</span><strong>Closed</strong><p>Final status after verification and records.</p></div>
+              </div>
+
+              <hr class="my-5" id="security">
+              <h2>OT and Network Security relevance</h2>
+              <p>This project is highly relevant to an OT Network Engineer and Network Security Engineer pathway because technical risk is often introduced through poorly controlled change.</p>
+              <ul>
+                <li><strong>Firewall changes:</strong> requests can record reason, approval, affected systems, evidence, and verification.</li>
+                <li><strong>PLC and HMI access:</strong> engineering access can be reviewed and documented before implementation.</li>
+                <li><strong>Network segmentation:</strong> VLAN, routing, and firewall-rule changes can follow a formal workflow.</li>
+                <li><strong>Audit trail:</strong> status movement and reviewer accountability support investigation and learning.</li>
+                <li><strong>Management reporting:</strong> managers can see change volume, workflow health, and open risk.</li>
+              </ul>
+              <p>For the portfolio, the project shows more than coding. It demonstrates practical governance thinking, secure workflow design, role-based access, and an understanding of how engineering change affects operational environments.</p>
+
+              <hr class="my-5" id="roadmap">
+              <h2>Roadmap and next improvements</h2>
+              <div class="row g-4 mt-1">
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Risk assessment</h3><p>Add structured risk fields for safety, cybersecurity, production impact, affected assets, and rollback readiness.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Asset inventory link</h3><p>Connect ECRs to OT assets such as PLCs, HMIs, switches, firewalls, historians, and engineering workstations.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Collector data</h3><p>Explore safe data collection or manual import to support evidence-led engineering decisions.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Public demo strategy</h3><p>Maintain a safe demo environment with disposable data for hiring managers and portfolio visitors.</p></div></div>
+              </div>
+
+              <div class="contact-panel text-center mt-5">
+                <p class="section-label">Live project</p>
+                <h2 class="section-title mx-auto">Explore the live ECR project.</h2>
+                <p class="text-secondary content-width mx-auto mt-3 mb-4">Open the current online demo version of the Engineering Change Request Platform and review the workflow, dashboard, reports, and governance structure directly.</p>
+                <a class="btn btn-primary rounded-pill px-4" href="https://jablonsky.pythonanywhere.com/index" target="_blank" rel="noopener">Open live ECR platform</a>
+              </div>
+            </article>
+          </section>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="py-4 border-top bg-white">
+    <div class="container d-flex flex-column flex-md-row justify-content-between gap-2 text-secondary small">
+      <span>© 2026 Raf Jablonsky Portfolio</span>
+      <a class="text-secondary" href="../index.html">Back to homepage</a>
+    </div>
+  </footer>
+
+  <button class="back-to-top" type="button" aria-label="Back to top">↑ Top</button>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../script.js"></script>
+</body>
+</html>
