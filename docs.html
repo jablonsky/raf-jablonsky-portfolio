@@ -46,6 +46,7 @@
             <a href="#overview">Overview</a>
             <a href="#project-docs">Project docs</a>
             <a href="#technical-notes">Technical notes</a>
+            <a href="#ot-security-notes">OT security notes</a>
             <a href="#procedures">Procedures</a>
             <a href="#article-drafts">Article drafts</a>
             <a href="#first-article">First article</a>
@@ -77,6 +78,62 @@
               <p>This section will collect short, readable notes that explain specific networking and OT security concepts in a practical engineering context.</p>
               <div class="tag-cloud mt-3">
                 <span>VLAN segmentation</span><span>802.1Q trunks</span><span>STP / RSTP</span><span>HSRP</span><span>ACLs</span><span>Firewall rules</span><span>Packet captures</span><span>DNS / ARP / TCP</span><span>OT zoning</span><span>Configuration backup</span><span>Baseline auditing</span><span>Secure remote access</span>
+              </div>
+            </section>
+
+            <hr class="my-5" id="ot-security-notes">
+            <section>
+              <p class="section-label">Industrial Networking & OT Security Notes</p>
+              <h2>Practical networking concepts applied to OT environments</h2>
+              <p>These notes adapt core networking topics into an industrial context. The focus is not only on how the technology works, but why it matters when networks support manufacturing operations, engineering access, asset visibility, and operational resilience.</p>
+
+              <div class="article-draft mt-4">
+                <h3>VLANs for OT Network Segmentation</h3>
+                <p>VLANs are one of the first practical controls used to separate network traffic. In an office network, VLANs may separate departments or device types. In an OT environment, the purpose becomes more operationally important: separating production assets, engineering workstations, HMIs, PLCs, cameras, vendor access, and business IT systems.</p>
+                <p>Good segmentation helps reduce unnecessary broadcast traffic, limits the spread of faults, and supports clearer security boundaries. For example, a production cell should not automatically share the same flat network as office laptops or guest devices. Even when firewall rules are not yet mature, VLANs provide a structured foundation for zoning and future control.</p>
+                <p>From a manufacturing perspective, VLANs are useful because they make the network easier to understand, document, troubleshoot, and protect. They turn a flat environment into defined areas of responsibility.</p>
+              </div>
+
+              <div class="article-draft mt-4">
+                <h3>DHCP Snooping: Protecting Industrial Networks from Rogue DHCP</h3>
+                <p>DHCP makes IP addressing easier, but in industrial networks an unexpected DHCP server can create serious disruption. A misconfigured router, test device, or laptop can hand out incorrect network settings and cause machines, HMIs, or engineering stations to lose communication.</p>
+                <p>DHCP Snooping helps by allowing switches to distinguish trusted DHCP sources from untrusted ports. Only approved ports should provide DHCP responses. This reduces the risk of accidental or malicious address assignment and helps preserve predictable network behaviour.</p>
+                <p>In OT environments, the value is not only cybersecurity. It is also reliability. Preventing rogue DHCP behaviour can protect production continuity and reduce difficult troubleshooting during outages.</p>
+              </div>
+
+              <div class="article-draft mt-4">
+                <h3>Dynamic ARP Inspection: Reducing ARP Spoofing Risk</h3>
+                <p>ARP is a normal part of Ethernet networking, but it can also be abused. ARP spoofing or poisoning can misdirect traffic, interrupt communication, or support man-in-the-middle attacks. In industrial networks, this could affect visibility between engineering workstations, HMIs, servers, and control devices.</p>
+                <p>Dynamic ARP Inspection checks ARP messages against trusted information, often learned through DHCP Snooping. This helps prevent devices from falsely claiming another device’s IP address.</p>
+                <p>For OT cybersecurity, this is a useful example of Layer 2 protection. Many industrial networks rely heavily on stable local Ethernet communication, so protecting address resolution supports both security and operational reliability.</p>
+              </div>
+
+              <div class="article-draft mt-4">
+                <h3>STP/RSTP: Redundancy and Loop Prevention in Plant Networks</h3>
+                <p>Redundancy is common in industrial environments because downtime matters. However, connecting switches with multiple paths can create loops if the design is not controlled. A switching loop can flood a network and quickly become an operational incident.</p>
+                <p>Spanning Tree Protocol and Rapid Spanning Tree Protocol help prevent loops by controlling which paths are active and which paths remain available as backups. In plant networks, this supports resilience while reducing the risk of uncontrolled Layer 2 behaviour.</p>
+                <p>The key lesson is that redundancy must be designed, documented, and tested. More cables do not automatically mean more resilience. A resilient OT network needs predictable failover and clear understanding of how switches will behave during a fault.</p>
+              </div>
+
+              <div class="article-draft mt-4">
+                <h3>Syslog: Turning Network Events into OT Visibility</h3>
+                <p>Syslog allows switches, routers, firewalls, and other devices to send event messages to a central logging system. In a small lab, logs help with troubleshooting. In an OT environment, logs become part of operational visibility and incident response.</p>
+                <p>Without central logging, important events may remain hidden on individual devices. Link changes, failed logins, configuration changes, interface errors, and security alerts can be missed until a problem becomes visible in production.</p>
+                <p>For OT cybersecurity, Syslog supports evidence. It helps answer practical questions: what changed, when did it happen, which device reported it, and what else occurred at the same time?</p>
+              </div>
+
+              <div class="article-draft mt-4">
+                <h3>NTP: Why Time Synchronisation Matters in OT</h3>
+                <p>Network Time Protocol keeps systems aligned to a common time source. This may sound like a small detail, but in troubleshooting and cybersecurity it is critical. If switches, firewalls, servers, and monitoring tools all use different clocks, event correlation becomes unreliable.</p>
+                <p>In OT environments, time matters for alarms, production events, access logs, packet captures, and incident timelines. When investigating a fault or security concern, accurate timestamps help build a clear sequence of events.</p>
+                <p>NTP is therefore not just a convenience feature. It is part of engineering evidence quality. Reliable time supports reliable investigation.</p>
+              </div>
+
+              <div class="article-draft mt-4">
+                <h3>ACLs: Basic Traffic Control Between OT Zones</h3>
+                <p>Access Control Lists are a simple but important way to control which traffic is allowed or denied. In OT networks, they can help limit communication between zones, reduce unnecessary access, and support the principle of least privilege.</p>
+                <p>For example, an engineering workstation may need access to specific industrial devices, but office systems may not need direct access to the same area. ACLs can help define these boundaries, especially in smaller environments or lab designs where full firewall architecture is not yet in place.</p>
+                <p>ACLs should be planned carefully because blocking the wrong traffic can disrupt operations. The OT mindset is to understand the process, document the requirement, test the change, and keep evidence of what was implemented.</p>
               </div>
             </section>
 
