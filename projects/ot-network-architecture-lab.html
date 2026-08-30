@@ -45,7 +45,9 @@
         <aside class="col-lg-3">
           <div class="docs-card docs-sidebar p-3">
             <a href="#purpose">Purpose</a>
+            <a href="#featured-lab">Featured lab article</a>
             <a href="#technology">Technology</a>
+            <a href="#strategy">Lab strategy</a>
             <a href="#evidence">Portfolio evidence</a>
             <a href="#security">Security relevance</a>
             <a href="#next">Next improvements</a>
@@ -54,13 +56,64 @@
         <section class="col-lg-9">
           <article class="docs-card docs-content p-4 p-lg-5">
             <section id="purpose">
+              <p class="section-label">Lab foundation</p>
               <h2>Purpose</h2>
-              <p>This lab is designed to show network engineering fundamentals in a way that supports OT segmentation and security thinking.</p>
+              <p class="fs-5">This lab is designed to show network engineering fundamentals in a practical environment that supports OT segmentation, secure architecture, and repeatable learning.</p>
+              <p>Instead of keeping OT network design as theory only, the lab uses a dedicated Proxmox server as a local platform for building virtual routers, firewalls, workstations, Linux tools, and future monitoring services.</p>
             </section>
-            <hr class="my-5">
-            <section id="technology">
+
+            <hr class="my-5" id="featured-lab">
+            <section>
+              <p class="section-label">Featured lab article</p>
+              <h2>Installing Proxmox VE on a dedicated lab server</h2>
+              <p class="fs-5">The first step in the OT Network Architecture Lab is preparing a standalone machine to run Proxmox VE. This creates an independent server where lab networks and virtual machines can be built safely without depending on a daily-use laptop or desktop operating system.</p>
+
+              <div class="status-panel my-4">
+                <span class="badge rounded-pill text-bg-info mb-3">Important installation note</span>
+                <p class="mb-0">Proxmox VE is normally installed as a bare-metal virtualization platform. During installation, the selected disk is used for the server and existing data on that disk is removed, so the machine should be prepared as a dedicated lab server with backups completed first.</p>
+              </div>
+
+              <h3>Why Proxmox belongs in this OT lab</h3>
+              <p>Proxmox provides the base layer for a realistic engineering lab. It allows one physical machine to host several virtual systems, each with its own role in the network design. This supports safe experimentation with segmentation, routing, security zones, and monitoring without needing many separate physical devices.</p>
+
+              <div class="row g-3 my-4">
+                <div class="col-md-3"><div class="mini-stat"><strong>PVE</strong><span>Virtualization host</span></div></div>
+                <div class="col-md-3"><div class="mini-stat"><strong>VMs</strong><span>Lab systems</span></div></div>
+                <div class="col-md-3"><div class="mini-stat"><strong>Bridges</strong><span>Network zones</span></div></div>
+                <div class="col-md-3"><div class="mini-stat"><strong>OT</strong><span>Segmentation lab</span></div></div>
+              </div>
+
+              <h3>Independent installation workflow</h3>
+              <div class="workflow-grid mt-4">
+                <div><span>STEP 1</span><strong>Prepare the machine</strong><p>Choose a dedicated computer or server, check hardware, connect network and keyboard/display access, and back up anything important.</p></div>
+                <div><span>STEP 2</span><strong>Download the ISO</strong><p>Download the current Proxmox VE ISO installer from the official Proxmox download page.</p></div>
+                <div><span>STEP 3</span><strong>Create bootable USB</strong><p>Write the ISO image to a USB drive using a reliable image-writing tool, then boot the lab machine from that USB device.</p></div>
+                <div><span>STEP 4</span><strong>Install to disk</strong><p>Select the installation target disk and filesystem, then continue through the guided installer.</p></div>
+                <div><span>STEP 5</span><strong>Set identity and network</strong><p>Configure hostname, management IP address, gateway, DNS, admin password, and email address.</p></div>
+                <div><span>STEP 6</span><strong>Open web interface</strong><p>After reboot, manage the host from a browser using the Proxmox web interface on port 8006.</p></div>
+              </div>
+
+              <h3>First validation after installation</h3>
+              <p>After the first login, the important checks are simple: confirm the management IP is reachable, check that storage is visible, verify the server can update packages, and create a first small test VM before building the full OT lab design.</p>
+
+              <div class="status-panel mt-4">
+                <h3 class="h5 mt-0">Useful Proxmox references</h3>
+                <p>These official links support the installation workflow and should be checked before repeating the build on another machine.</p>
+                <div class="d-flex flex-column flex-sm-row gap-3">
+                  <a class="btn btn-outline-primary rounded-pill px-4" href="https://www.proxmox.com/en/downloads/proxmox-virtual-environment/" target="_blank" rel="noopener">Proxmox VE downloads</a>
+                  <a class="btn btn-outline-dark rounded-pill px-4" href="https://proxmox.com/en/products/proxmox-virtual-environment/get-started" target="_blank" rel="noopener">Proxmox installation guide</a>
+                </div>
+              </div>
+            </section>
+
+            <hr class="my-5" id="technology">
+            <section>
               <h2>Technology and methods</h2>
-              <div class="mt-3"><span class="badge rounded-pill text-bg-light border me-2 mb-2">VLANs</span>
+              <div class="mt-3"><span class="badge rounded-pill text-bg-light border me-2 mb-2">Proxmox VE</span>
+<span class="badge rounded-pill text-bg-light border me-2 mb-2">Bare-metal server</span>
+<span class="badge rounded-pill text-bg-light border me-2 mb-2">Virtual machines</span>
+<span class="badge rounded-pill text-bg-light border me-2 mb-2">Linux administration</span>
+<span class="badge rounded-pill text-bg-light border me-2 mb-2">VLANs</span>
 <span class="badge rounded-pill text-bg-light border me-2 mb-2">Routing</span>
 <span class="badge rounded-pill text-bg-light border me-2 mb-2">STP</span>
 <span class="badge rounded-pill text-bg-light border me-2 mb-2">HSRP</span>
@@ -68,24 +121,40 @@
 <span class="badge rounded-pill text-bg-light border me-2 mb-2">Segmentation</span>
 <span class="badge rounded-pill text-bg-light border me-2 mb-2">OT security controls</span></div>
             </section>
-            <hr class="my-5">
-            <section id="evidence">
+
+            <hr class="my-5" id="strategy">
+            <section>
+              <h2>Initial Proxmox OT lab strategy</h2>
+              <p>The lab strategy is to use Proxmox as the stable foundation for a multi-zone OT/IT practice environment. Each virtual system can represent a different part of the architecture, making it easier to test network boundaries, document design decisions, and build security understanding step by step.</p>
+              <div class="row g-4 mt-1">
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Firewall and routing zone</h3><p>Use a firewall or router VM to control traffic between enterprise, DMZ, engineering, and simulated OT segments.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Engineering workstation</h3><p>Create a controlled workstation VM for administration, network tools, documentation, and testing.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Linux tools server</h3><p>Prepare a Linux VM for packet analysis, scripting, logging, scanning practice, and future automation tools.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Monitoring and evidence</h3><p>Add services later for dashboards, logs, packet captures, topology notes, and repeatable portfolio evidence.</p></div></div>
+              </div>
+            </section>
+
+            <hr class="my-5" id="evidence">
+            <section>
               <h2>What this project demonstrates</h2>
-              <ul><li>Layered network design</li>
+              <ul><li>Independent installation of a virtualization server</li>
+<li>Layered network design</li>
 <li>Segmentation planning</li>
 <li>Redundancy concepts</li>
 <li>Secure architecture documentation</li>
 <li>Industrial network context</li></ul>
             </section>
-            <hr class="my-5">
-            <section id="security">
+
+            <hr class="my-5" id="security">
+            <section>
               <h2>Network security relevance</h2>
-              <p>Segmentation, resilience, and controlled communication paths are core ideas in OT security and Network Security Engineering.</p>
+              <p>Segmentation, resilience, and controlled communication paths are core ideas in OT security and Network Security Engineering. A Proxmox-based lab gives these ideas a practical place to be designed, tested, documented, and improved.</p>
             </section>
-            <hr class="my-5">
-            <section id="next">
+
+            <hr class="my-5" id="next">
+            <section>
               <h2>Next improvements</h2>
-              <p>This page is ready for screenshots, architecture diagrams, code links, lessons learned, and repository-based project documentation.</p>
+              <p>The next stage is to add screenshots from the Proxmox installation, a simple network diagram, first VM build notes, virtual bridge planning, and a clear OT/IT lab topology.</p>
             </section>
 
             <div class="contact-panel text-center mt-5">
