@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 1280" role="img" aria-labelledby="title desc">
+  <title id="title">Purdue model topology for OT Network Architecture Lab</title>
+  <desc id="desc">A layered OT lab topology flowing from Enterprise to Industrial DMZ, Operations, Supervisory, and Control.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f8fbff"/>
+      <stop offset="1" stop-color="#eef5ff"/>
+    </linearGradient>
+    <linearGradient id="enterprise" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3157ff"/>
+      <stop offset="1" stop-color="#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="dmz" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0ea5e9"/>
+      <stop offset="1" stop-color="#06b6d4"/>
+    </linearGradient>
+    <linearGradient id="operations" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#14b8a6"/>
+      <stop offset="1" stop-color="#22c55e"/>
+    </linearGradient>
+    <linearGradient id="supervisory" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f59e0b"/>
+      <stop offset="1" stop-color="#f97316"/>
+    </linearGradient>
+    <linearGradient id="control" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ef4444"/>
+      <stop offset="1" stop-color="#be123c"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#14213d" flood-opacity="0.14"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#3157ff"/>
+    </marker>
+    <style>
+      .label{font-family:Inter,Segoe UI,Arial,sans-serif;fill:#ffffff;font-weight:800;letter-spacing:-.02em}
+      .sub{font-family:Inter,Segoe UI,Arial,sans-serif;fill:rgba(255,255,255,.82);font-weight:600}
+      .small{font-family:Inter,Segoe UI,Arial,sans-serif;fill:#667085;font-weight:700}
+      .note{font-family:Inter,Segoe UI,Arial,sans-serif;fill:#14213d;font-weight:800}
+      .card{rx:28;filter:url(#shadow)}
+      .icon-line{fill:none;stroke:#ffffff;stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
+      .icon-fill{fill:rgba(255,255,255,.18);stroke:#ffffff;stroke-width:5}
+    </style>
+  </defs>
+
+  <rect width="960" height="1280" rx="36" fill="url(#bg)"/>
+  <circle cx="102" cy="100" r="170" fill="#3157ff" opacity="0.08"/>
+  <circle cx="850" cy="1020" r="220" fill="#18c8a8" opacity="0.09"/>
+
+  <text x="480" y="74" text-anchor="middle" class="note" font-size="36">Proposed Purdue OT Lab Topology</text>
+  <text x="480" y="112" text-anchor="middle" class="small" font-size="18">Layered lab design for Proxmox-hosted OT/IT segmentation practice</text>
+
+  <!-- Layer 5 Enterprise -->
+  <g transform="translate(110 155)">
+    <rect class="card" width="740" height="145" fill="url(#enterprise)"/>
+    <circle cx="72" cy="72" r="42" fill="rgba(255,255,255,.14)"/>
+    <path class="icon-line" d="M47 83h50M54 83V55h36v28M62 55V42h20v13"/>
+    <text x="145" y="60" class="label" font-size="34">Enterprise</text>
+    <text x="145" y="94" class="sub" font-size="18">Business network, users, management systems</text>
+    <text x="645" y="58" text-anchor="middle" class="sub" font-size="16">Level 4/5</text>
+  </g>
+
+  <line x1="480" y1="318" x2="480" y2="374" stroke="#3157ff" stroke-width="8" stroke-linecap="round" marker-end="url(#arrow)"/>
+
+  <!-- Industrial DMZ -->
+  <g transform="translate(110 390)">
+    <rect class="card" width="740" height="145" fill="url(#dmz)"/>
+    <circle cx="72" cy="72" r="42" fill="rgba(255,255,255,.14)"/>
+    <path class="icon-fill" d="M47 48h50v34c0 22-16 34-25 39-9-5-25-17-25-39z"/>
+    <path class="icon-line" d="M60 76l10 10 18-23"/>
+    <text x="145" y="60" class="label" font-size="34">Industrial DMZ</text>
+    <text x="145" y="94" class="sub" font-size="18">Firewall boundary, jump host, update and logging buffer</text>
+    <text x="645" y="58" text-anchor="middle" class="sub" font-size="16">Level 3.5</text>
+  </g>
+
+  <line x1="480" y1="553" x2="480" y2="609" stroke="#3157ff" stroke-width="8" stroke-linecap="round" marker-end="url(#arrow)"/>
+
+  <!-- Operations -->
+  <g transform="translate(110 625)">
+    <rect class="card" width="740" height="145" fill="url(#operations)"/>
+    <circle cx="72" cy="72" r="42" fill="rgba(255,255,255,.14)"/>
+    <rect x="45" y="48" width="54" height="40" rx="8" class="icon-fill"/>
+    <path class="icon-line" d="M54 105h36M72 88v17M56 62h32M56 74h20"/>
+    <text x="145" y="60" class="label" font-size="34">Operations</text>
+    <text x="145" y="94" class="sub" font-size="18">Engineering services, historian, operations tools</text>
+    <text x="645" y="58" text-anchor="middle" class="sub" font-size="16">Level 3</text>
+  </g>
+
+  <line x1="480" y1="788" x2="480" y2="844" stroke="#3157ff" stroke-width="8" stroke-linecap="round" marker-end="url(#arrow)"/>
+
+  <!-- Supervisory -->
+  <g transform="translate(110 860)">
+    <rect class="card" width="740" height="145" fill="url(#supervisory)"/>
+    <circle cx="72" cy="72" r="42" fill="rgba(255,255,255,.14)"/>
+    <rect x="43" y="48" width="58" height="42" rx="8" class="icon-fill"/>
+    <path class="icon-line" d="M55 75l10-10 10 14 13-22M60 106h24M72 90v16"/>
+    <text x="145" y="60" class="label" font-size="34">Supervisory</text>
+    <text x="145" y="94" class="sub" font-size="18">SCADA, HMI, operator visibility and control</text>
+    <text x="645" y="58" text-anchor="middle" class="sub" font-size="16">Level 2</text>
+  </g>
+
+  <line x1="480" y1="1023" x2="480" y2="1079" stroke="#3157ff" stroke-width="8" stroke-linecap="round" marker-end="url(#arrow)"/>
+
+  <!-- Control -->
+  <g transform="translate(110 1095)">
+    <rect class="card" width="740" height="145" fill="url(#control)"/>
+    <circle cx="72" cy="72" r="42" fill="rgba(255,255,255,.14)"/>
+    <rect x="44" y="48" width="56" height="52" rx="9" class="icon-fill"/>
+    <path class="icon-line" d="M58 62h28M58 76h28M58 90h10M86 100v16M58 100v16M72 100v16"/>
+    <text x="145" y="60" class="label" font-size="34">Control</text>
+    <text x="145" y="94" class="sub" font-size="18">PLC, field control, simulated process network</text>
+    <text x="645" y="58" text-anchor="middle" class="sub" font-size="16">Level 0/1</text>
+  </g>
+</svg>

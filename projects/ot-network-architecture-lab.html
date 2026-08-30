@@ -126,6 +126,10 @@
             <section>
               <h2>Initial Proxmox OT lab strategy</h2>
               <p>The lab strategy is to use Proxmox as the stable foundation for a multi-zone OT/IT practice environment. Each virtual system can represent a different part of the architecture, making it easier to test network boundaries, document design decisions, and build security understanding step by step.</p>
+              <figure class="screenshot-card large my-4">
+                <img src="../assets/ot-lab/purdue-ot-topology.svg" alt="Proposed Purdue model OT lab topology showing Enterprise, Industrial DMZ, Operations, Supervisory, and Control layers">
+                <figcaption><strong>Proposed Purdue-style topology:</strong> the lab will use layered zones so traffic can be designed, filtered, observed, and documented between enterprise and control levels.</figcaption>
+              </figure>
               <div class="row g-4 mt-1">
                 <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Firewall and routing zone</h3><p>Use a firewall or router VM to control traffic between enterprise, DMZ, engineering, and simulated OT segments.</p></div></div>
                 <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Engineering workstation</h3><p>Create a controlled workstation VM for administration, network tools, documentation, and testing.</p></div></div>
