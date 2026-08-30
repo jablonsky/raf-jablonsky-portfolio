@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Stage 1 Purdue VLAN topology for the OT Network Architecture Lab, including Enterprise IT, Industrial DMZ, Site Operations, Supervisory, and Control layers.">
+  <title>Stage 1 OT Lab Topology | Raf Jablonsky</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+  <script defer src="https://cloud.umami.is/script.js" data-website-id="f44f6cb3-d78f-4c6e-9200-2f1eda223114"></script>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
+    <div class="container py-2">
+      <a class="navbar-brand fw-bold" href="../index.html">Raf Jablonsky<span class="brand-dot">.</span></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+          <li class="nav-item"><a class="nav-link" href="../index.html#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="../profile.html">Profile</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#capabilities">Capabilities</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#projects">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#strategy">Strategy</a></li>
+          <li class="nav-item"><a class="nav-link" href="../docs.html">Docs</a></li>
+          <li class="nav-item"><a class="btn btn-primary rounded-pill px-4" href="../index.html#contact">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <header class="docs-hero">
+    <div class="container">
+      <a class="text-secondary text-decoration-none" href="ot-network-architecture-lab.html">← Back to OT Network Architecture Lab</a>
+      <p class="section-label mt-4">Stage 1 topology</p>
+      <h1 class="section-title">OT Network Architecture Lab — Purdue VLAN Design</h1>
+      <p class="lead text-secondary mt-4 content-width">A first-stage lab topology for building a segmented OT/IT practice environment on Proxmox, using clear VLAN boundaries and controlled access between layers.</p>
+    </div>
+  </header>
+
+  <main class="section-padding">
+    <div class="container">
+      <div class="row g-4 align-items-start">
+        <aside class="col-lg-3">
+          <div class="docs-card docs-sidebar p-3">
+            <a href="#objective">Objective</a>
+            <a href="#diagram">Graphical topology</a>
+            <a href="#vlan-plan">VLAN plan</a>
+            <a href="#access">Controlled access</a>
+            <a href="#proxmox">Proxmox mapping</a>
+            <a href="#next">Future development</a>
+          </div>
+        </aside>
+        <section class="col-lg-9">
+          <article class="docs-card docs-content p-4 p-lg-5">
+            <section id="objective">
+              <p class="section-label">Build target</p>
+              <h2>Stage 1 lab objective</h2>
+              <p class="fs-5">The first stage of the OT Network Architecture Lab is to build a clean Purdue-style topology with separate VLANs for Enterprise IT, Industrial DMZ, Site Operations, Supervisory, and Control.</p>
+              <p>This gives the project a precise starting point. The lab can begin with segmentation and controlled communication paths, then evolve later with IP addressing, firewall rules, virtual machines, packet captures, monitoring, and screenshots.</p>
+            </section>
+
+            <hr class="my-5" id="diagram">
+            <section>
+              <p class="section-label">Architecture graphic</p>
+              <h2>Graphical topology</h2>
+              <figure class="screenshot-card large my-4">
+                <img src="../assets/ot-lab/purdue-stage-1-vlan-topology.svg" alt="Stage 1 Purdue VLAN topology showing Enterprise IT VLANs 10 to 14, Industrial DMZ VLAN 20, Site Operations VLAN 30, Supervisory VLAN 40, and Control VLAN 50">
+                <figcaption><strong>Stage 1 Purdue VLAN topology:</strong> a layered OT/IT lab design where each zone has a defined purpose and traffic is expected to pass through controlled access points.</figcaption>
+              </figure>
+            </section>
+
+            <hr class="my-5" id="vlan-plan">
+            <section>
+              <p class="section-label">Segmentation plan</p>
+              <h2>Proposed VLAN structure</h2>
+              <p>The lab starts with simple, memorable VLAN numbers so the design is easy to understand, document, and expand.</p>
+              <div class="row g-4 mt-1">
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Level 4 — Enterprise IT</h3><p>VLAN 10 HR, VLAN 11 Finance, VLAN 12 Marketing, VLAN 13 IT Admin, and VLAN 14 Enterprise Servers.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Level 3.5 — Industrial DMZ</h3><p>VLAN 20 for Jump Host, Historian, Proxy, or other controlled services between Enterprise and Operations.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Level 3 — Site Operations</h3><p>VLAN 30 for the Engineering Workstation and operational support access.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Level 2 — Supervisory</h3><p>VLAN 40 for SCADA and HMI systems used for operator visibility and supervision.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Level 1 — Control</h3><p>VLAN 50 for PLC or controller simulation and future field-control practice.</p></div></div>
+              </div>
+            </section>
+
+            <hr class="my-5" id="access">
+            <section>
+              <p class="section-label">Security principle</p>
+              <h2>Controlled access between layers</h2>
+              <p>Enterprise IT should not directly reach the Control layer. Access should move through defined boundaries, especially the Industrial DMZ and Site Operations layer. This makes the lab useful for learning segmentation, firewall policy design, troubleshooting, and evidence-based security documentation.</p>
+              <div class="workflow-grid mt-4">
+                <div><span>FLOW 1</span><strong>Enterprise to DMZ</strong><p>Business-side access is filtered before reaching industrial services.</p></div>
+                <div><span>FLOW 2</span><strong>DMZ to Operations</strong><p>Jump hosts, proxy services, or historian-style systems provide controlled paths.</p></div>
+                <div><span>FLOW 3</span><strong>Operations to Supervisory</strong><p>Engineering access can be limited and documented for SCADA/HMI support.</p></div>
+                <div><span>FLOW 4</span><strong>Supervisory to Control</strong><p>PLC/controller communication remains close to the OT process layer.</p></div>
+              </div>
+            </section>
+
+            <hr class="my-5" id="proxmox">
+            <section>
+              <p class="section-label">Virtual lab mapping</p>
+              <h2>How this maps to Proxmox</h2>
+              <p>Proxmox will act as the physical foundation for the lab. The first build can use VLAN-aware bridges and a firewall/router VM to separate the zones. Additional VMs can then be added gradually for enterprise services, jump host access, engineering workstation tools, SCADA/HMI simulation, and controller simulation.</p>
+              <ul>
+                <li><strong>Proxmox host:</strong> base server for virtual machines and lab networking.</li>
+                <li><strong>Firewall/router VM:</strong> central point for routing and access rules between VLANs.</li>
+                <li><strong>Virtual bridges:</strong> lab network paths that can later map to physical NICs or managed switch trunks.</li>
+                <li><strong>Lab VMs:</strong> realistic systems for each layer without needing many physical devices.</li>
+              </ul>
+            </section>
+
+            <hr class="my-5" id="next">
+            <section>
+              <p class="section-label">Living design</p>
+              <h2>Future development</h2>
+              <p>This page is intended to grow as the lab progresses. Later updates can add IP addressing, firewall rules, VM names, Proxmox bridge screenshots, managed switch configuration, packet captures, monitoring tools, and lessons learned.</p>
+            </section>
+
+            <div class="contact-panel text-center mt-5">
+              <p class="section-label">Main lab page</p>
+              <h2 class="section-title mx-auto">Return to the OT Network Architecture Lab overview.</h2>
+              <p class="text-secondary content-width mx-auto mt-3 mb-4">The main lab page explains the Proxmox installation article, portfolio value, and wider project direction.</p>
+              <a class="btn btn-primary rounded-pill px-4" href="ot-network-architecture-lab.html">Back to lab overview</a>
+            </div>
+          </article>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer class="py-4 border-top bg-white">
+    <div class="container d-flex flex-column flex-md-row justify-content-between gap-2 text-secondary small">
+      <span>© 2026 Raf Jablonsky Portfolio</span>
+      <a class="text-secondary" href="../index.html">Back to homepage</a>
+    </div>
+  </footer>
+
+  <button class="back-to-top" type="button" aria-label="Back to top">↑ Top</button>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../script.js"></script>
+</body>
+</html>
