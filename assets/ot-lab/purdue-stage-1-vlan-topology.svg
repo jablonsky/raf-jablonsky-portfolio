@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1600" role="img" aria-labelledby="title desc">
-  <title id="title">Stage 1 Purdue VLAN topology for OT Network Architecture Lab</title>
+  <title id="title">Stage 1 Purdue VLAN topology for OT Network Lab</title>
   <desc id="desc">Detailed Stage 1 lab topology showing Enterprise IT VLANs, Industrial DMZ VLAN 20, Site Operations VLAN 30, Supervisory VLAN 40, and Control VLAN 50.</desc>
   <defs>
     <linearGradient id="pageBg" x1="0" y1="0" x2="1" y2="1">
@@ -21,7 +21,7 @@
   <circle cx="120" cy="150" r="210" fill="#3157ff" opacity=".08"/>
   <circle cx="1040" cy="1330" r="260" fill="#18c8a8" opacity=".10"/>
   <text x="600" y="78" text-anchor="middle" class="font title" font-size="40">Stage 1 Purdue VLAN Topology</text>
-  <text x="600" y="118" text-anchor="middle" class="font subtitle" font-size="20">First build target for the Proxmox OT Network Architecture Lab</text>
+  <text x="600" y="118" text-anchor="middle" class="font subtitle" font-size="20">First build target for the Proxmox OT Network Lab</text>
 
   <!-- Enterprise -->
   <g transform="translate(95 165)">

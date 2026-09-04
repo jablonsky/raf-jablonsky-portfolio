@@ -28,7 +28,7 @@ The site is focused on:
 - Engineering Change Request Platform
 - Packet Insight
 - NetSafe Auditor
-- OT Network Architecture Lab
+- OT Network Lab
 - Smart Factory / OT Security Lab direction
 
 ## Next content to add

@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="OT Network Architecture Lab project case study for Raf Jablonsky OT Network Engineer portfolio.">
-  <title>OT Network Architecture Lab | Raf Jablonsky</title>
+  <meta name="description" content="OT Network Lab project case study for Raf Jablonsky OT Network Engineer portfolio.">
+  <title>OT Network Lab | Raf Jablonsky</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="../styles.css">
   <script defer src="https://cloud.umami.is/script.js" data-website-id="f44f6cb3-d78f-4c6e-9200-2f1eda223114"></script>
@@ -33,9 +33,9 @@
   <header class="docs-hero">
     <div class="container">
       <a class="text-secondary text-decoration-none" href="../index.html#projects">← Back to projects</a>
-      <p class="section-label mt-4">Lab architecture</p>
-      <h1 class="section-title">OT Network Architecture Lab</h1>
-      <p class="lead text-secondary mt-4 content-width">Industrial and enterprise network design covering VLANs, EtherChannel, STP, HSRP, routing, segmentation, and OT security controls.</p>
+      <p class="section-label mt-4">OT network lab</p>
+      <h1 class="section-title">OT Network Lab</h1>
+      <p class="lead text-secondary mt-4 content-width">A practical OT and network engineering lab for architecture, automation, security controls, segmentation, reporting, and repeatable learning.</p>
     </div>
   </header>
 
@@ -47,7 +47,8 @@
             <a href="#purpose">Purpose</a>
             <a href="#featured-lab">Featured lab article</a>
             <a href="#technology">Technology</a>
-            <a href="#strategy">Lab strategy</a>
+            <a href="#automation">Automation</a>
+            <a href="#strategy">Architecture strategy</a>
             <a href="#evidence">Portfolio evidence</a>
             <a href="#security">Security relevance</a>
             <a href="#next">Next improvements</a>
@@ -58,7 +59,7 @@
             <section id="purpose">
               <p class="section-label">Lab foundation</p>
               <h2>Purpose</h2>
-              <p class="fs-5">This lab is designed to show network engineering fundamentals in a practical environment that supports OT segmentation, secure architecture, and repeatable learning.</p>
+              <p class="fs-5">This lab is designed to show network engineering fundamentals in a practical environment that can grow from OT architecture into automation, security controls, evidence collection, and repeatable learning.</p>
               <p>Instead of keeping OT network design as theory only, the lab uses a dedicated Proxmox server as a local platform for building virtual routers, firewalls, workstations, Linux tools, and future monitoring services.</p>
             </section>
 
@@ -66,7 +67,7 @@
             <section>
               <p class="section-label">Featured lab article</p>
               <h2>Installing Proxmox VE on a dedicated lab server</h2>
-              <p class="fs-5">The first step in the OT Network Architecture Lab is preparing a standalone machine to run Proxmox VE. This creates an independent server where lab networks and virtual machines can be built safely without depending on a daily-use laptop or desktop operating system.</p>
+              <p class="fs-5">The first step in the OT Network Lab is preparing a standalone machine to run Proxmox VE. This creates an independent server where lab networks and virtual machines can be built safely without depending on a daily-use laptop or desktop operating system.</p>
 
               <div class="status-panel my-4">
                 <span class="badge rounded-pill text-bg-info mb-3">Important installation note</span>
@@ -119,7 +120,28 @@
 <span class="badge rounded-pill text-bg-light border me-2 mb-2">HSRP</span>
 <span class="badge rounded-pill text-bg-light border me-2 mb-2">EtherChannel</span>
 <span class="badge rounded-pill text-bg-light border me-2 mb-2">Segmentation</span>
-<span class="badge rounded-pill text-bg-light border me-2 mb-2">OT security controls</span></div>
+<span class="badge rounded-pill text-bg-light border me-2 mb-2">OT security controls</span>
+<span class="badge rounded-pill text-bg-light border me-2 mb-2">Network automation</span></div>
+            </section>
+
+
+            <hr class="my-5" id="automation">
+            <section>
+              <p class="section-label">Automation</p>
+              <h2>Adding Python and Netmiko automation to the OT Network Lab</h2>
+              <p class="fs-5">The lab is not only for architecture diagrams and virtual network design. It is also a place to build small automation scripts that collect evidence, validate network state, and turn manual checks into repeatable workflows.</p>
+              <p>The first automation article documents a Cisco interface health check script. It connects to a Cisco IOS device with Netmiko, runs interface checks, compares the current state with the previous run, and generates a simple health report.</p>
+              <div class="row g-4 mt-1">
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Interface health check</h3><p>Use Python and Netmiko to run <code>show ip int brief</code>, identify active and inactive interfaces, and produce a timestamped report.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Baseline and changes</h3><p>Save the previous interface state and compare it with the current run to detect added, removed, or changed interfaces.</p></div></div>
+              </div>
+              <div class="status-panel mt-4 d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+                <div>
+                  <h3 class="h5 mb-2">Cisco Interface Health Check Automation</h3>
+                  <p class="mb-0 text-secondary">Read the full automation walkthrough with the script, setup notes, report example, and GitHub repository link.</p>
+                </div>
+                <a class="btn btn-outline-primary rounded-pill px-4 flex-shrink-0" href="cisco-interface-health-check-automation.html">Read automation article</a>
+              </div>
             </section>
 
             <hr class="my-5" id="strategy">
@@ -170,7 +192,7 @@
 
             <div class="contact-panel text-center mt-5">
               <p class="section-label">Project on GitHub</p>
-              <h2 class="section-title mx-auto">Explore the OT Network Architecture Lab repository.</h2>
+              <h2 class="section-title mx-auto">Explore the OT Network Lab repository.</h2>
               <p class="text-secondary content-width mx-auto mt-3 mb-4">Open the repository to review the lab direction, network design documentation, topology notes, and future architecture evidence.</p>
               <a class="btn btn-primary rounded-pill px-4 mb-4" href="https://github.com/jablonsky/ot-network-architecture-lab" target="_blank" rel="noopener">View on GitHub</a>
               <div class="row g-3 text-start mt-2">

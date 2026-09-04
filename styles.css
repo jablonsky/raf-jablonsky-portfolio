@@ -168,6 +168,27 @@ body {
 .docs-content h3 { margin-top: 28px; font-weight: 750; }
 .docs-content p, .docs-content li { color: var(--muted); }
 
+/* Article code blocks */
+.docs-content pre {
+  margin: 22px 0;
+  padding: 20px 22px;
+  border-radius: 14px;
+  background: #111111;
+  color: #f8fafc;
+  overflow-x: auto;
+  box-shadow: 0 16px 40px rgba(20, 33, 61, 0.18);
+}
+
+.docs-content code {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.95rem;
+}
+
+.docs-content pre code {
+  color: inherit;
+  background: transparent;
+}
+
 @media (max-width: 767px) {
   .hero-section { padding: 64px 0; }
   .section-padding { padding: 64px 0; }

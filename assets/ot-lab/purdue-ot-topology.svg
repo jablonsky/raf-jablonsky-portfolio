@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 1280" role="img" aria-labelledby="title desc">
-  <title id="title">Purdue model topology for OT Network Architecture Lab</title>
+  <title id="title">Purdue model topology for OT Network Lab</title>
   <desc id="desc">A layered OT lab topology flowing from Enterprise to Industrial DMZ, Operations, Supervisory, and Control.</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">

@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Cisco interface health check automation article by Raf Jablonsky: using Python, Netmiko, TextFSM, baselines, change detection, and reporting.">
+  <title>Cisco Interface Health Check Automation | Raf Jablonsky</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+  <script defer src="https://cloud.umami.is/script.js" data-website-id="f44f6cb3-d78f-4c6e-9200-2f1eda223114"></script>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
+    <div class="container py-2">
+      <a class="navbar-brand fw-bold" href="../index.html">Raf Jablonsky<span class="brand-dot">.</span></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+          <li class="nav-item"><a class="nav-link" href="../index.html#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="../profile.html">Profile</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#capabilities">Capabilities</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#projects">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#strategy">Strategy</a></li>
+          <li class="nav-item"><a class="nav-link" href="../docs.html">Docs</a></li>
+          <li class="nav-item"><a class="btn btn-primary rounded-pill px-4" href="../index.html#contact">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <header class="project-hero packet-hero">
+    <div class="container">
+      <a class="text-white-50 text-decoration-none" href="../index.html#projects">← Back to projects</a>
+      <div class="row align-items-center g-5 mt-2">
+        <div class="col-lg-8">
+          <span class="badge rounded-pill text-bg-light mb-3">Python Network Automation</span>
+          <h1 class="display-4 fw-bold lh-1 text-white mb-4">Building My First Cisco Interface Health Check Automation</h1>
+          <p class="lead text-white-75 mb-4">A practical learning script using Python, Netmiko, TextFSM, baselines, change detection, and simple network reporting.</p>
+          <div class="d-flex flex-column flex-sm-row gap-3 mb-4">
+            <a class="btn btn-light btn-lg rounded-pill px-4" href="#automation">Read the walkthrough</a>
+            <a class="btn btn-outline-light btn-lg rounded-pill px-4" href="https://github.com/jablonsky/Netmiko-Lab" target="_blank" rel="noopener">View GitHub repo</a>
+          </div>
+          <div class="d-flex flex-wrap gap-2">
+            <span class="badge rounded-pill text-bg-dark border border-light-subtle">Python</span>
+            <span class="badge rounded-pill text-bg-dark border border-light-subtle">Netmiko</span>
+            <span class="badge rounded-pill text-bg-dark border border-light-subtle">Cisco IOS</span>
+            <span class="badge rounded-pill text-bg-dark border border-light-subtle">TextFSM</span>
+            <span class="badge rounded-pill text-bg-dark border border-light-subtle">Network reporting</span>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="packet-visual shadow-lg">
+            <div class="packet-window-bar"><span></span><span></span><span></span></div>
+            <div class="packet-grid">
+              <div class="packet-node active">SSH</div>
+              <div class="packet-line"></div>
+              <div class="packet-node">Cisco</div>
+              <div class="packet-line"></div>
+              <div class="packet-node">Report</div>
+            </div>
+            <div class="packet-metrics">
+              <div><strong>CLI</strong><span>show commands</span></div>
+              <div><strong>Base</strong><span>saved state</span></div>
+              <div><strong>Diff</strong><span>changes</span></div>
+              <div><strong>Health</strong><span>summary</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="section-padding">
+    <div class="container">
+      <div class="row g-4 align-items-start">
+        <aside class="col-lg-3">
+          <div class="docs-card docs-sidebar p-3">
+            <a href="#automation">What it does</a>
+            <a href="#why">Why it matters</a>
+            <a href="#setup">Setup</a>
+            <a href="#baseline">Baseline logic</a>
+            <a href="#report">Report output</a>
+            <a href="#code">Full script</a>
+            <a href="#roadmap">Future improvements</a>
+          </div>
+        </aside>
+        <section class="col-lg-9">
+          <article class="docs-card docs-content p-4 p-lg-5">
+            <section id="automation">
+              <p class="section-label">Learning automation</p>
+              <h2>From a manual interface check to a repeatable Python workflow.</h2>
+              <p class="fs-5">Network automation can sound complicated at the beginning. My approach is to start with a small, practical script that solves a real operational task and helps me understand every step.</p>
+              <p>This article walks through my first Cisco interface health check script. It connects to a Cisco IOS device, collects interface information, compares the current state with the previous run, and creates a simple health report.</p>
+              <div class="row g-3 my-4">
+                <div class="col-md-3"><div class="mini-stat"><strong>SSH</strong><span>Connect with Netmiko</span></div></div>
+                <div class="col-md-3"><div class="mini-stat"><strong>CLI</strong><span>Run show commands</span></div></div>
+                <div class="col-md-3"><div class="mini-stat"><strong>State</strong><span>Compare previous run</span></div></div>
+                <div class="col-md-3"><div class="mini-stat"><strong>Report</strong><span>Create text evidence</span></div></div>
+              </div>
+            </section>
+
+            <hr class="my-5" id="why">
+            <section>
+              <h2>Why this is useful</h2>
+              <p>In daily network operations, interface status is one of the first things engineers check. A quick interface view can answer basic but important questions:</p>
+              <ul>
+                <li>Is an interface up or down?</li>
+                <li>Has an interface changed since the last check?</li>
+                <li>Was a new interface added?</li>
+                <li>Was an interface removed?</li>
+                <li>Did the IP address, status, or protocol state change?</li>
+              </ul>
+              <p>Manually checking this is useful for learning, but automation helps make the check repeatable. This script creates a baseline on the first run and then compares later output against that saved state.</p>
+            </section>
+
+            <hr class="my-5" id="setup">
+            <section>
+              <h2>Tools and setup</h2>
+              <p>The script uses Python, Netmiko, python-dotenv, and TextFSM templates. Device details are loaded from environment variables rather than being written directly into the script.</p>
+              <div class="row g-4 mt-1">
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Dependencies</h3><pre><code>netmiko
+python-dotenv
+ntc-templates</code></pre></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Example environment</h3><pre><code>NETMIKO_HOST=devnetsandboxiosxec8k.cisco.com
+NETMIKO_USERNAME=your_username
+NETMIKO_PASSWORD=your_password
+NETMIKO_PORT=22
+NETMIKO_DEVICE_TYPE=cisco_ios</code></pre></div></div>
+              </div>
+              <p class="mt-4">Keeping credentials outside the script is an important habit. Real usernames, passwords, tokens, and sandbox credentials should not be uploaded to GitHub.</p>
+            </section>
+
+            <hr class="my-5" id="baseline">
+            <section>
+              <h2>Baseline and change detection</h2>
+              <p>The core idea is simple: save the latest interface state, then compare the next run against the previous saved output.</p>
+              <pre><code>try:
+    with open(latest_file_path, &#x27;r&#x27;) as file:
+        previous_state = file.read()
+except FileNotFoundError:
+    previous_state = None
+
+if previous_state is None:
+    change_status = &#x27;BASELINE CREATED&#x27;
+elif previous_state != latest_state:
+    change_status = &#x27;CHANGE DETECTED&#x27;
+else:
+    change_status = &#x27;NO CHANGE TO PREVIOUS FILE&#x27;</code></pre>
+              <p>On the first run, the script creates the baseline. On later runs, it can identify whether the interface output changed and then record the result in a change log.</p>
+            </section>
+
+            <hr class="my-5" id="report">
+            <section>
+              <h2>Report output</h2>
+              <p>The script creates a report file inside the <code>reports</code> folder. The filename includes a timestamp so every run can produce separate evidence.</p>
+              <p>The report includes the date, hostname, device information, active interfaces, inactive interfaces, detected changes, and simple statistics.</p>
+              <pre><code>====================
+INTERFACE HEALTH REPORT
+====================
+Date: 2026-09-04 10:30:00
+Hostname: Router1
+
+====================
+Active Interfaces: [...]
+Inactive Interfaces: [...]
+
+====================
+CHANGES SECTION:
+No detailed interface changes observed.
+
+====================
+STATISTICS
+Active interfaces: 5
+Inactive interfaces: 2
+Health interfaces: 71.43%.</code></pre>
+            </section>
+
+            <hr class="my-5" id="code">
+            <section>
+              <h2>Full script</h2>
+              <p>The full learning script is included below. The latest project files are also available in my GitHub repository.</p>
+              <pre><code>&quot;&quot;&quot;
+Cisco Interface Health Check
+
+This script connects to a Cisco IOS device using Netmiko,
+collects interface status, compares it with the previous run,
+and creates a simple health report.
+&quot;&quot;&quot;
+
+from netmiko import ConnectHandler
+import os
+from datetime import datetime   
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
+def get_device_config():
+    device = {
+        &#x27;device_type&#x27;: &#x27;cisco_ios&#x27;,
+        &#x27;host&#x27;: os.getenv(&#x27;NETMIKO_HOST&#x27;),
+        &#x27;username&#x27;: os.getenv(&#x27;NETMIKO_USERNAME&#x27;),
+        &#x27;password&#x27;: os.getenv(&#x27;NETMIKO_PASSWORD&#x27;),
+        &#x27;port&#x27;: int(os.getenv(&#x27;NETMIKO_PORT&#x27;, 22))
+        }
+    return device
+
+def connect_to_device(device):
+        &quot;&quot;&quot; Create a Netmiko SSH connection to the network device &quot;&quot;&quot;
+
+        return ConnectHandler(**device)
+
+def save_text_file(file_path, content, mode=&#x27;w&#x27;):
+    &quot;&quot;&quot; Save a text content to a file. &quot;&quot;&quot;
+
+    with open(file_path, mode) as file:
+        file.write(content)
+
+    
+
+
+def main():
+        # current script logic
+    
+    device = get_device_config()
+    connection = connect_to_device(device)
+
+    if not device[&#x27;host&#x27;] or not device[&#x27;username&#x27;] or not device[&#x27;password&#x27;]:
+        raise ValueError(&quot;Missing device connection details. Please set NETMIKO_HOST, NETMIKO_PASSWORD and NETMIKO_USERNAME&quot;)
+
+    
+    current_time = datetime.now().strftime(&#x27;%Y-%m-%d %H:%M:%S&#x27;)
+    file_time = datetime.now().strftime(&#x27;%Y-%m-%d_%H-%M-%S&#x27;)
+    os.makedirs(&#x27;reports&#x27;, exist_ok=True)
+    os.makedirs(&#x27;logs&#x27;, exist_ok=True)
+    report_filename = os.path.join(&#x27;reports&#x27;, f&#x27;interface_health_report_{file_time}.txt&#x27;)
+    latest_file_path = os.path.join(&#x27;logs&#x27;, &#x27;latest_interface_state.txt&#x27;)
+    log_file_path = os.path.join(&#x27;logs&#x27;, &#x27;change_log.txt&#x27;)
+    
+                          
+    interfaces = connection.send_command(&#x27;show ip int brief&#x27;, use_textfsm=True)
+    version = connection.send_command(&#x27;show version | incl Processor board ID&#x27;)
+    hostname_output = connection.send_command(&#x27;show running | incl hostname&#x27;)
+    hostname_part = hostname_output.split()
+    hostname = hostname_part[1]
+    
+    
+    
+    latest_state = connection.send_command(&#x27;show ip int brief&#x27;)
+    change_status = &#x27;&#x27;
+    
+    # compare previous and current state 
+    def parse_interface_state(interface_text):
+        &#x27;&#x27;&#x27; 
+            withdraw information from latest state (raw variable), translate to lines, read from lines to the dictionary, grouping it
+    
+        &#x27;&#x27;&#x27;
+        interface_dict = {}
+    
+        lines = interface_text.splitlines()
+        
+        # starting from the second line in the block
+        for line in lines[1:]:
+            single_line = line.split()
+    
+            if len(single_line) &gt;= 6:
+                interface_name = single_line[0]
+                ip_address = single_line[1]
+                status = single_line[4]
+                protocol = single_line[5]
+    
+                # condition for administratively down, status and protocol variables must be updated 
+                if single_line[5] == &#x27;administratively&#x27;:
+                    status = &#x27;administratively down&#x27; 
+                    protocol = single_line[6]
+    
+                interface_dict[interface_name] = {
+                    &#x27;ip_address&#x27;: ip_address,
+                    &#x27;status&#x27;: status,
+                    &#x27;protocol&#x27;: protocol
+                }
+    
+        return interface_dict
+    
+    
+    try:
+        with open(latest_file_path, &#x27;r&#x27;) as file:
+            previous_state = file.read()
+    except FileNotFoundError:
+        previous_state = None
+    
+    if previous_state is None:
+        change_status = &#x27;BASELINE CREATED&#x27;
+        print(&#x27;Baseline created.&#x27;)
+    elif previous_state != latest_state:
+        print(&#x27;Change detected - investigation required&#x27;)
+        change_status = &#x27;CHANGE DETECTED&#x27;
+    else:
+        change_status = &#x27;NO CHANGE TO PREVIOUS FILE&#x27;
+        print(&#x27;No change to previous file.&#x27;)
+    
+    
+    
+    observed_changes = []
+    
+    
+    
+    if previous_state is not None:
+        previous_interfaces = parse_interface_state(previous_state)
+        current_interfaces = parse_interface_state(latest_state)
+    
+    
+        for interface in current_interfaces:
+            if interface not in previous_interfaces:
+                observed_changes.append(f&quot;ADDED: {interface} with IP {current_interfaces[interface][&#x27;ip_address&#x27;]}&quot;)
+                observed_changes.append(f&quot;Status: {current_interfaces[interface][&#x27;status&#x27;]}&quot;)
+                observed_changes.append(f&quot;Protocol: {current_interfaces[interface][&#x27;protocol&#x27;]}&quot;)
+    
+        for interface in previous_interfaces:
+            if interface not in current_interfaces:
+                observed_changes.append(f&quot;REMOVED: {interface} was previously IP {previous_interfaces[interface][&#x27;ip_address&#x27;]}&quot;)
+                observed_changes.append(f&quot;Status: {previous_interfaces[interface][&#x27;status&#x27;]}&quot;)
+                observed_changes.append(f&quot;Protocol: {previous_interfaces[interface][&#x27;protocol&#x27;]}&quot;)
+    
+        for interface in current_interfaces:
+            if interface in previous_interfaces:
+                old = previous_interfaces[interface]
+                new = current_interfaces[interface]
+    
+                if old[&#x27;ip_address&#x27;] != new[&#x27;ip_address&#x27;]:
+                    observed_changes.append(
+                        f&quot;CHANGED: {interface} IP changed from {old[&#x27;ip_address&#x27;]} to {new[&#x27;ip_address&#x27;]}&quot;
+                    )
+    
+                if old[&#x27;status&#x27;] != new[&#x27;status&#x27;]:
+                    observed_changes.append(
+                        f&quot;CHANGED: {interface} status changed from {old[&#x27;status&#x27;]} to {new[&#x27;status&#x27;]}&quot;
+                    )
+    
+                if old[&#x27;protocol&#x27;] != new[&#x27;protocol&#x27;]:
+                    observed_changes.append(
+                        f&quot;CHANGED: {interface} protocol changed from {old[&#x27;protocol&#x27;]} to {new[&#x27;protocol&#x27;]}&quot;
+                    )
+    
+    
+    
+
+
+    save_text_file(latest_file_path,latest_state)
+    save_text_file(log_file_path, f&#x27;{current_time} - {change_status} on {hostname}  - show ip int brief\n&#x27;, mode=&#x27;a&#x27; )
+    
+    
+    
+    active_int = []
+    inactive_int = []
+    # count  interfaces
+    for interface in interfaces:
+        if interface[&#x27;status&#x27;] == &#x27;up&#x27; and interface[&#x27;proto&#x27;] == &#x27;up&#x27;:
+            active_int.append(interface[&#x27;interface&#x27;])
+        else:
+            inactive_int.append(interface[&#x27;interface&#x27;])
+    
+    
+    
+    active_count = len(active_int)
+    inactive_count = len(inactive_int)
+    total_int = len(interfaces)
+    health_interfaces_status = round(active_count / total_int * 100, 2)
+    
+    if inactive_int == []:
+        inactive_int = &#x27;INACTIVE INTERFACES NOT DETECTED.&#x27;
+        inactive_count = 0
+    
+    
+    report_lines = []
+    report_lines.append(20 * &#x27;=&#x27;)
+    report_lines.append(&#x27;INTERFACE HEALTH REPORT&#x27;)
+    report_lines.append(20 * &#x27;=&#x27;)
+    report_lines.append(f&#x27;Date: {current_time}&#x27;)
+    report_lines.append(version) # device version
+    report_lines.append(f&#x27;Hostname: {hostname}&#x27;) # device version
+    report_lines.append(&#x27;\n&#x27;)
+    report_lines.append(20 * &#x27;=&#x27;)
+    report_lines.append(f&#x27;Active Interfaces: {active_int}&#x27;)
+    report_lines.append(f&#x27;Inactive Interfaces: {inactive_int}&#x27;)
+    report_lines.append(&#x27;\n&#x27;)
+    report_lines.append(20 * &#x27;=&#x27;)
+    report_lines.append(&quot;CHANGES SECTION:&quot;)
+    
+    if observed_changes:
+        for change in observed_changes:
+            report_lines.append(change)
+    else:
+        report_lines.append(&quot;No detailed interface changes observed.&quot;)
+    
+    report_lines.append(&quot;&quot;)
+    report_lines.append(20 * &#x27;=&#x27;)
+    report_lines.append(&#x27;STATISTICS&#x27;)
+    report_lines.append(f&#x27;Active interfaces: {active_count}&#x27;)
+    report_lines.append(f&#x27; Inactive interfaces: {inactive_count}&#x27;)
+    report_lines.append(f&#x27;Health interfaces: {health_interfaces_status}%.&#x27;)
+    report_lines.append(&#x27;\n&#x27;)
+    
+    
+    report = &#x27;\n&#x27;.join(report_lines)
+    
+    
+    
+    with open(report_filename, &#x27;w&#x27;) as file:
+        file.write(report)
+    
+    print(report)
+    
+    
+    connection.disconnect()
+    
+    
+    
+if __name__==&quot;__main__&quot;:
+    main()
+
+
+</code></pre>
+            </section>
+
+            <hr class="my-5" id="roadmap">
+            <section>
+              <h2>What I learned and next improvements</h2>
+              <p>This script helped me understand how Python can connect to a real network device, run show commands, store command output, create a baseline, compare later runs, and generate a basic report.</p>
+              <p>The most important lesson is that automation does not need to start as a large, complex platform. A small script that checks one operational area can already create useful evidence and build confidence.</p>
+              <div class="row g-4 mt-1">
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Refactor functions</h3><p>Move parser logic outside <code>main()</code> and split reusable helpers into separate modules.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Improve reliability</h3><p>Add safer error handling and make sure the device session disconnects even if a command fails.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Support more devices</h3><p>Extend the workflow from one learning device to multiple devices and device profiles.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Improve reporting</h3><p>Export reports as Markdown, CSV, HTML, or dashboard-ready data.</p></div></div>
+              </div>
+            </section>
+
+            <div class="contact-panel text-center mt-5">
+              <p class="section-label">Project on GitHub</p>
+              <h2 class="section-title mx-auto">A practical first step into Python network automation.</h2>
+              <p class="text-secondary content-width mx-auto mt-3 mb-4">Open the Netmiko Lab repository to review the learning scripts, notes, requirements, and future improvements.</p>
+              <a class="btn btn-primary rounded-pill px-4" href="https://github.com/jablonsky/Netmiko-Lab" target="_blank" rel="noopener">View Netmiko-Lab on GitHub</a>
+            </div>
+          </article>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer class="py-4 border-top bg-white">
+    <div class="container d-flex flex-column flex-md-row justify-content-between gap-2 text-secondary small">
+      <span>© 2026 Raf Jablonsky Portfolio</span>
+      <a class="text-secondary" href="../index.html">Back to homepage</a>
+    </div>
+  </footer>
+
+  <button class="back-to-top" type="button" aria-label="Back to top">↑ Top</button>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../script.js"></script>
+</body>
+</html>
