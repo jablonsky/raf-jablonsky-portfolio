@@ -46,6 +46,7 @@
           <div class="docs-card docs-sidebar p-3">
             <a href="#purpose">Purpose</a>
             <a href="#featured-lab">Featured lab article</a>
+            <a href="#proxmox-progress">Proxmox progress</a>
             <a href="#technology">Technology</a>
             <a href="#automation">Automation</a>
             <a href="#strategy">Architecture strategy</a>
@@ -104,6 +105,29 @@
                   <a class="btn btn-outline-primary rounded-pill px-4" href="https://www.proxmox.com/en/downloads/proxmox-virtual-environment/" target="_blank" rel="noopener">Proxmox VE downloads</a>
                   <a class="btn btn-outline-dark rounded-pill px-4" href="https://proxmox.com/en/products/proxmox-virtual-environment/get-started" target="_blank" rel="noopener">Proxmox installation guide</a>
                 </div>
+              </div>
+            </section>
+
+            <hr class="my-5" id="proxmox-progress">
+            <section>
+              <p class="section-label">Latest lab update · September 2026</p>
+              <h2>Proxmox, PNETLab, and Palo Alto implementation progress</h2>
+              <p class="fs-5">The lab has progressed from installation planning to a working virtual environment with separate IT, industrial DMZ, and OT paths.</p>
+              <p>The latest article documents the Proxmox host and VM checks, PNETLab resources and topology, Cisco interface validation, Palo Alto Layer 3 interfaces and security zones, and an NTP fault that remains under investigation.</p>
+              <figure class="screenshot-card large my-4">
+                <img src="../assets/ot-lab/proxmox-progress/pnetlab-topology-online.png" alt="Working PNETLab topology connecting IT, industrial DMZ, and OT network paths through a Palo Alto firewall" loading="lazy">
+                <figcaption><strong>Current topology:</strong> the virtual IT, IDMZ, and OT paths are online and connected to the firewall boundary.</figcaption>
+              </figure>
+              <div class="row g-4 mt-1">
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Infrastructure validated</h3><p>Proxmox host capacity, PNETLab VM resources, firewall VM state, and virtual network connections have been recorded.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Security zones created</h3><p>Dedicated IT, OT, and IDMZ firewall zones now provide the structure for controlled inter-zone policies and logging.</p></div></div>
+              </div>
+              <div class="status-panel mt-4 d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+                <div>
+                  <h3 class="h5 mb-2">Building the Proxmox OT Security Lab</h3>
+                  <p class="mb-0 text-secondary">Read the full progress article with implementation evidence, validation results, lessons learned, and next steps.</p>
+                </div>
+                <a class="btn btn-outline-primary rounded-pill px-4 flex-shrink-0" href="proxmox-ot-security-lab-progress.html">Read progress article</a>
               </div>
             </section>
 
@@ -187,18 +211,18 @@
             <hr class="my-5" id="next">
             <section>
               <h2>Next improvements</h2>
-              <p>The next stage is to add screenshots from the Proxmox installation, a simple network diagram, first VM build notes, virtual bridge planning, and a clear OT/IT lab topology.</p>
+              <p>The next stage is to resolve NTP reachability, add least-privilege firewall policies with logging, activate the planned OT VLANs, introduce representative engineering and control assets, and collect repeatable packet and log evidence.</p>
             </section>
 
             <div class="contact-panel text-center mt-5">
               <p class="section-label">Project on GitHub</p>
               <h2 class="section-title mx-auto">Explore the OT Network Lab repository.</h2>
-              <p class="text-secondary content-width mx-auto mt-3 mb-4">Open the repository to review the lab direction, network design documentation, topology notes, and future architecture evidence.</p>
+              <p class="text-secondary content-width mx-auto mt-3 mb-4">Open the repository to follow the architecture, Proxmox and PNETLab implementation, zone design, validation evidence, automation, and future OT security exercises.</p>
               <a class="btn btn-primary rounded-pill px-4 mb-4" href="https://github.com/jablonsky/ot-network-architecture-lab" target="_blank" rel="noopener">View on GitHub</a>
               <div class="row g-3 text-start mt-2">
-                <div class="col-md-4"><div class="feature-list-card"><h3 class="h5">Repository</h3><p>Project files and planned lab material for OT segmentation, redundancy, and secure architecture practice.</p></div></div>
-                <div class="col-md-4"><div class="feature-list-card"><h3 class="h5">Documentation</h3><p>Space for topology diagrams, VLAN plans, routing notes, security boundaries, and engineering decisions.</p></div></div>
-                <div class="col-md-4"><div class="feature-list-card"><h3 class="h5">Issues</h3><p>Future lab improvements can be tracked as screenshots, diagrams, configs, and lessons learned are added.</p></div></div>
+                <div class="col-md-4"><div class="feature-list-card"><h3 class="h5">Implementation</h3><p>Proxmox, PNETLab, firewall, routing, switching, and segmented-zone build evidence.</p></div></div>
+                <div class="col-md-4"><div class="feature-list-card"><h3 class="h5">Documentation</h3><p>Topology diagrams, address plans, validation results, security boundaries, and engineering decisions.</p></div></div>
+                <div class="col-md-4"><div class="feature-list-card"><h3 class="h5">Next milestones</h3><p>NTP remediation, least-privilege policies, OT services, monitoring, packet captures, and lessons learned.</p></div></div>
               </div>
             </div>
           </article>

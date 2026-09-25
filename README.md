@@ -29,6 +29,7 @@ The site is focused on:
 - Packet Insight
 - NetSafe Auditor
 - OT Network Lab
+- Proxmox OT Security Lab progress article with PNETLab and Palo Alto evidence
 - Smart Factory / OT Security Lab direction
 
 ## Next content to add
@@ -45,3 +46,4 @@ The site is focused on:
 - `projects/packet-insight.html`
 - `projects/netsafe-auditor.html`
 - `projects/ot-network-architecture-lab.html`
+- `projects/proxmox-ot-security-lab-progress.html`

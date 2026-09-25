@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Proxmox, PNETLab, and Palo Alto progress update for Raf Jablonsky's OT Network Security Lab.">
+  <title>Proxmox OT Security Lab Progress | Raf Jablonsky</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+  <script defer src="https://cloud.umami.is/script.js" data-website-id="f44f6cb3-d78f-4c6e-9200-2f1eda223114"></script>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
+    <div class="container py-2">
+      <a class="navbar-brand fw-bold" href="../index.html">Raf Jablonsky<span class="brand-dot">.</span></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+          <li class="nav-item"><a class="nav-link" href="../index.html#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="../profile.html">Profile</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#capabilities">Capabilities</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#projects">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#strategy">Strategy</a></li>
+          <li class="nav-item"><a class="nav-link" href="../docs.html">Docs</a></li>
+          <li class="nav-item"><a class="btn btn-primary rounded-pill px-4" href="../index.html#contact">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <header class="docs-hero">
+    <div class="container">
+      <a class="text-secondary text-decoration-none" href="ot-network-architecture-lab.html">← Back to OT Network Lab</a>
+      <p class="section-label mt-4">Lab progress update · 25 September 2026</p>
+      <h1 class="section-title">Building the Proxmox OT Security Lab</h1>
+      <p class="lead text-secondary mt-4 content-width">Moving from a virtualization host to a working multi-zone lab with PNETLab, virtual network devices, and a Palo Alto firewall.</p>
+    </div>
+  </header>
+
+  <main class="section-padding">
+    <div class="container">
+      <div class="row g-4">
+        <aside class="col-lg-3">
+          <div class="docs-card docs-sidebar p-3">
+            <a href="#overview">Progress overview</a>
+            <a href="#proxmox">Proxmox foundation</a>
+            <a href="#pnetlab">PNETLab platform</a>
+            <a href="#topology">Topology build</a>
+            <a href="#validation">Device validation</a>
+            <a href="#firewall">Firewall zones</a>
+            <a href="#ntp">NTP check</a>
+            <a href="#lessons">Lessons and next steps</a>
+          </div>
+        </aside>
+
+        <section class="col-lg-9">
+          <article class="docs-card docs-content p-4 p-lg-5">
+            <section id="overview">
+              <p class="section-label">From design to implementation</p>
+              <h2>Progress overview</h2>
+              <p class="fs-5">The OT Network Lab has moved beyond the initial Proxmox installation. The current environment now combines a dedicated virtualization host, a PNETLab network-emulation VM, a Palo Alto VM-Series firewall, virtual routers, and virtual switches.</p>
+              <p>The immediate objective is to create separate IT, industrial DMZ, and OT paths, then validate every layer before adding policies, simulated workloads, monitoring, and attack-and-defence exercises. All addresses visible in this article are private RFC&nbsp;1918 lab addresses used inside an isolated learning environment.</p>
+
+              <div class="row g-3 my-4">
+                <div class="col-md-3"><div class="mini-stat"><strong>Proxmox</strong><span>Virtualization layer</span></div></div>
+                <div class="col-md-3"><div class="mini-stat"><strong>PNETLab</strong><span>Network emulation</span></div></div>
+                <div class="col-md-3"><div class="mini-stat"><strong>3 zones</strong><span>IT, IDMZ and OT</span></div></div>
+                <div class="col-md-3"><div class="mini-stat"><strong>PA-VM</strong><span>Security boundary</span></div></div>
+              </div>
+
+              <div class="status-panel my-4">
+                <span class="badge rounded-pill text-bg-success mb-3">Current milestone</span>
+                <p class="mb-0">The host, PNETLab VM, firewall VM, topology, routed interfaces, switch management interfaces, and Palo Alto zones have been created and checked. NTP reachability remains an open troubleshooting item.</p>
+              </div>
+            </section>
+
+            <hr class="my-5" id="proxmox">
+            <section>
+              <p class="section-label">Layer 1: virtual infrastructure</p>
+              <h2>Validating the Proxmox foundation</h2>
+              <p>The first check was at the Proxmox datacentre and node level. The host reports 16 CPU threads from an AMD Ryzen 7 5800X, approximately 47&nbsp;GiB of RAM, local storage, and the dedicated <code>lab-archive</code> storage area. The dashboard also confirms that the PNETLab and Palo Alto virtual machines can run together.</p>
+              <div class="screenshot-gallery my-4">
+                <figure class="screenshot-card">
+                  <img src="../assets/ot-lab/proxmox-progress/proxmox-datacenter-overview.png" alt="Proxmox datacentre overview showing the pve-lab host, PNETLab VM, Palo Alto firewall VM, and storage resources" loading="lazy">
+                  <figcaption><strong>Datacentre inventory:</strong> the <code>pve-lab</code> node hosts PNETLab, PA-FW01, and the storage used by the lab.</figcaption>
+                </figure>
+                <figure class="screenshot-card">
+                  <img src="../assets/ot-lab/proxmox-progress/proxmox-host-summary.png" alt="Proxmox node summary showing processor, memory, storage, and host utilisation" loading="lazy">
+                  <figcaption><strong>Host health check:</strong> CPU, RAM, storage, kernel, boot mode, and repository status provide the starting evidence before loading the lab.</figcaption>
+                </figure>
+              </div>
+              <p>This capacity check matters because nested network emulation and firewall appliances consume resources differently from ordinary server VMs. Recording the baseline helps distinguish an application problem from host CPU, memory, storage, or I/O pressure later.</p>
+            </section>
+
+            <hr class="my-5" id="pnetlab">
+            <section>
+              <p class="section-label">Layer 2: emulation platform</p>
+              <h2>Preparing and validating PNETLab</h2>
+              <p>The PNETLab VM is configured with four CPU cores, 8&nbsp;GiB of RAM, a 100&nbsp;GiB virtual disk, and four virtual network interfaces attached to separate Proxmox bridges. This creates the connection points required to move traffic between the emulated topology and the Palo Alto firewall VM.</p>
+              <div class="screenshot-gallery my-4">
+                <figure class="screenshot-card">
+                  <img src="../assets/ot-lab/proxmox-progress/pnetlab-vm-hardware.png" alt="Proxmox hardware configuration for the PNETLab virtual machine with four CPUs, eight GiB memory, disk, and four network interfaces" loading="lazy">
+                  <figcaption><strong>PNETLab VM hardware:</strong> four bridged NICs support the management, IT, OT, and IDMZ connectivity required by the design.</figcaption>
+                </figure>
+                <figure class="screenshot-card">
+                  <img src="../assets/ot-lab/proxmox-progress/pnetlab-console-validation.png" alt="PNETLab console showing successful Ubuntu startup and the PNETLab management address" loading="lazy">
+                  <figcaption><strong>Console validation:</strong> the appliance boots correctly and presents the management service and interface information.</figcaption>
+                </figure>
+              </div>
+              <p>The firewall VM was also checked from Proxmox. PA-FW01 is running with four virtual CPUs, 6&nbsp;GiB of RAM, and a 60&nbsp;GiB system disk. Starting with explicit resource records makes later changes controlled and repeatable.</p>
+              <figure class="screenshot-card large my-4">
+                <img src="../assets/ot-lab/proxmox-progress/palo-alto-vm-summary.png" alt="Proxmox summary for the running Palo Alto PA-FW01 virtual machine" loading="lazy">
+                <figcaption><strong>Firewall VM:</strong> PA-FW01 is online and ready to terminate the lab's IT, OT, and industrial DMZ connections.</figcaption>
+              </figure>
+            </section>
+
+            <hr class="my-5" id="topology">
+            <section>
+              <p class="section-label">Layer 3: segmented topology</p>
+              <h2>Building the IT, IDMZ, and OT paths</h2>
+              <p>The PNETLab topology separates three paths at the firewall:</p>
+              <ul>
+                <li><strong>IT path:</strong> an IT router and switch use the 10.10.10.0/30 transit and a management segment.</li>
+                <li><strong>Industrial DMZ:</strong> the IDMZ switch connects to the firewall through the 10.30.10.0/24 segment.</li>
+                <li><strong>OT path:</strong> the OT core and access switches connect through the 10.20.10.0/30 transit, with additional VLAN interfaces prepared for future OT functions.</li>
+              </ul>
+              <div class="screenshot-gallery my-4">
+                <figure class="screenshot-card">
+                  <img src="../assets/ot-lab/proxmox-progress/pnetlab-topology-build.png" alt="Early PNETLab topology build showing IT, industrial DMZ, and OT devices before all nodes became active" loading="lazy">
+                  <figcaption><strong>Build checkpoint:</strong> the intended links and addressing were documented while devices were still being brought online.</figcaption>
+                </figure>
+                <figure class="screenshot-card">
+                  <img src="../assets/ot-lab/proxmox-progress/pnetlab-topology-online.png" alt="PNETLab topology with IT router, IDMZ switch, OT core switch, OT access switch, and firewall links online" loading="lazy">
+                  <figcaption><strong>Online checkpoint:</strong> the topology shows active IT, IDMZ, and OT paths after the initial device validation.</figcaption>
+                </figure>
+              </div>
+              <p>The before-and-after checkpoints are useful evidence. They show not only the intended design, but the transition from a drawn topology to active virtual links.</p>
+            </section>
+
+            <hr class="my-5" id="validation">
+            <section>
+              <p class="section-label">Layer 4: device checks</p>
+              <h2>Checking routed and switched interfaces</h2>
+              <p>Interface summaries were collected directly from the virtual devices. The IT router reports both links up/up: the firewall-facing transit at <code>10.10.10.1</code> and the switch-facing interface at <code>10.10.100.1</code>. The OT core switch shows its routed management SVI online while the remaining planned VLAN interfaces are present for later activation.</p>
+              <div class="screenshot-gallery my-4">
+                <figure class="screenshot-card">
+                  <img src="../assets/ot-lab/proxmox-progress/it-router-interface-validation.png" alt="Cisco IT router show ip interface brief output with both routed interfaces up and up" loading="lazy">
+                  <figcaption><strong>IT router:</strong> both routed interfaces are operational, validating the first IT-side path.</figcaption>
+                </figure>
+                <figure class="screenshot-card">
+                  <img src="../assets/ot-lab/proxmox-progress/ot-core-switch-interface-validation.png" alt="Cisco OT core switch show ip interface brief output listing the management and planned OT VLAN interfaces" loading="lazy">
+                  <figcaption><strong>OT core switch:</strong> the management SVI is up; the additional SVIs document the next stages of OT segmentation.</figcaption>
+                </figure>
+              </div>
+              <p>An interface that exists in the configuration is not automatically a working path. Recording administrative and protocol state at each checkpoint prevents assumptions and gives the lab a repeatable validation method.</p>
+            </section>
+
+            <hr class="my-5" id="firewall">
+            <section>
+              <p class="section-label">Layer 5: security boundary</p>
+              <h2>Mapping firewall interfaces to security zones</h2>
+              <p>Three Layer 3 firewall interfaces are assigned to the lab virtual router. The IT, OT, and IDMZ interfaces use distinct networks and are mapped to separate Palo Alto security zones:</p>
+              <ul>
+                <li><code>ethernet1/1</code> — IT transit — <code>Zone-IT</code></li>
+                <li><code>ethernet1/2</code> — OT transit — <code>Zone-OT</code></li>
+                <li><code>ethernet1/3</code> — industrial DMZ — <code>Zone-IDMZ</code></li>
+              </ul>
+              <div class="screenshot-gallery my-4">
+                <figure class="screenshot-card">
+                  <img src="../assets/ot-lab/proxmox-progress/palo-alto-layer3-interfaces.png" alt="Palo Alto interface table showing three active Layer 3 interfaces for IT, OT, and industrial DMZ zones" loading="lazy">
+                  <figcaption><strong>Layer 3 interfaces:</strong> the firewall terminates all three lab networks and places them in the shared lab virtual router.</figcaption>
+                </figure>
+                <figure class="screenshot-card">
+                  <img src="../assets/ot-lab/proxmox-progress/palo-alto-security-zones.png" alt="Palo Alto security zone table showing Zone-IT, Zone-OT, and Zone-IDMZ" loading="lazy">
+                  <figcaption><strong>Security zones:</strong> explicit IT, OT, and IDMZ boundaries prepare the lab for least-privilege inter-zone policies.</figcaption>
+                </figure>
+              </div>
+              <div class="status-panel mt-4">
+                <h3 class="h5 mt-0">Why this is important</h3>
+                <p class="mb-0">A topology becomes a security architecture only when communication boundaries are explicit. The zones provide the structure for controlled rules, logging, testing, and evidence about which flows are allowed between enterprise and operational systems.</p>
+              </div>
+            </section>
+
+            <hr class="my-5" id="ntp">
+            <section>
+              <p class="section-label">Operational validation</p>
+              <h2>Configuring NTP—and recording the failed check</h2>
+              <p>Accurate time is essential for firewall logs, packet captures, incident timelines, and correlation across network devices. The firewall was configured with <code>time.cloudflare.com</code> as the primary NTP server and <code>uk.pool.ntp.org</code> as the secondary.</p>
+              <div class="screenshot-gallery my-4">
+                <figure class="screenshot-card">
+                  <img src="../assets/ot-lab/proxmox-progress/palo-alto-ntp-settings.png" alt="Palo Alto NTP configuration dialog with primary and secondary NTP server names" loading="lazy">
+                  <figcaption><strong>NTP configuration:</strong> primary and secondary sources are defined without authentication for this lab checkpoint.</figcaption>
+                </figure>
+                <figure class="screenshot-card">
+                  <img src="../assets/ot-lab/proxmox-progress/palo-alto-services-summary.png" alt="Palo Alto services summary showing DNS and both configured NTP servers" loading="lazy">
+                  <figcaption><strong>Configuration review:</strong> the services page confirms that both server names were saved.</figcaption>
+                </figure>
+                <figure class="screenshot-card large">
+                  <img src="../assets/ot-lab/proxmox-progress/palo-alto-ntp-cli-check.png" alt="Palo Alto show ntp output reporting local clock use and both NTP servers unreachable" loading="lazy">
+                  <figcaption><strong>CLI validation:</strong> both sources are rejected and unreachable, so the firewall remains on its local clock. This is an open fault, not a completed NTP implementation.</figcaption>
+                </figure>
+              </div>
+              <p>The failed result is valuable engineering evidence. The configuration exists, but the service is not working. The next investigation will verify DNS resolution, the management-plane service route, default-route reachability, and whether UDP port 123 can leave the lab.</p>
+            </section>
+
+            <hr class="my-5" id="lessons">
+            <section>
+              <p class="section-label">Engineering reflection</p>
+              <h2>Lessons learned and next steps</h2>
+              <div class="row g-4 mt-1">
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Validate every layer</h3><p>Host health, VM resources, virtual bridges, emulated links, interface state, zone assignment, and application services each need their own check.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Keep failed evidence</h3><p>The NTP result prevents a configuration screenshot from being mistaken for proof that the service is operational.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Activate OT VLANs deliberately</h3><p>The planned OT SVIs will be enabled as simulated engineering, supervisory, and control assets are introduced.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Build policy from required flows</h3><p>The next firewall rules will be based on documented communication needs rather than broad any-to-any access.</p></div></div>
+              </div>
+
+              <h3>Next practical milestones</h3>
+              <ol>
+                <li>Resolve DNS, routing, service-route, or UDP/123 issues preventing NTP synchronisation.</li>
+                <li>Add inter-zone security policies and log both allowed and denied sessions.</li>
+                <li>Bring the planned OT VLAN interfaces online with representative hosts.</li>
+                <li>Add an engineering workstation, Linux monitoring tools, and simulated OT services.</li>
+                <li>Capture repeatable reachability, policy, packet, and log evidence for each test.</li>
+              </ol>
+            </section>
+
+            <div class="contact-panel text-center mt-5">
+              <p class="section-label">Continue exploring</p>
+              <h2 class="section-title mx-auto">Follow the OT Network Lab as it grows.</h2>
+              <p class="text-secondary content-width mx-auto mt-3 mb-4">The main case study connects this implementation update with the wider Purdue-style architecture, automation work, and repository.</p>
+              <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+                <a class="btn btn-primary rounded-pill px-4" href="ot-network-architecture-lab.html">OT Network Lab overview</a>
+                <a class="btn btn-outline-primary rounded-pill px-4" href="https://github.com/jablonsky/ot-network-architecture-lab" target="_blank" rel="noopener">View repository</a>
+              </div>
+            </div>
+          </article>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer class="py-4 border-top bg-white">
+    <div class="container d-flex flex-column flex-md-row justify-content-between gap-2 text-secondary small">
+      <span>© 2026 Raf Jablonsky Portfolio</span>
+      <a class="text-secondary" href="ot-network-architecture-lab.html">Back to OT Network Lab</a>
+    </div>
+  </footer>
+
+  <button class="back-to-top" type="button" aria-label="Back to top">↑ Top</button>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../script.js"></script>
+</body>
+</html>
