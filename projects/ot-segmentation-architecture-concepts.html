@@ -192,6 +192,18 @@
                     restricting lateral traffic between OT segments.
                   </figcaption>
                 </figure>
+                <figure class="screenshot-card large my-4">
+                  <img
+                    src="../assets/ot-architecture/topology.png"
+                    alt="Cisco Packet Tracer topology for Concept A with a firewall, Layer 3 core switch, Layer 2 access switch and five OT VLAN endpoints"
+                    loading="lazy"
+                  />
+                  <figcaption>
+                    <strong>Concept A Packet Tracer implementation:</strong>
+                    the Layer 3 core provides the five VLAN gateways and uses a
+                    routed transit link to reach the upstream firewall.
+                  </figcaption>
+                </figure>
                 <div class="row g-4">
                   <div class="col-md-6">
                     <div class="feature-list-card">
@@ -238,6 +250,19 @@
                     transports tagged VLANs while the router/firewall terminates
                     the VLAN gateways. Cross-VLAN traffic must reach the Layer 3
                     policy point.
+                  </figcaption>
+                </figure>
+                <figure class="screenshot-card large my-4">
+                  <img
+                    src="../assets/ot-architecture/firewall-roas-virtual-connection.png"
+                    alt="Cisco Packet Tracer topology for Concept B with five tagged OT VLANs connected through a Layer 2 switch to firewall subinterfaces"
+                    loading="lazy"
+                  />
+                  <figcaption>
+                    <strong>Concept B Packet Tracer implementation:</strong>
+                    the Layer 2 switch carries the VLANs to tagged Layer 3
+                    subinterfaces on the firewall, centralising gateway and
+                    policy enforcement.
                   </figcaption>
                 </figure>
                 <p>
