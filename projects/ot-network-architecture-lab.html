@@ -47,6 +47,7 @@
             <a href="#purpose">Purpose</a>
             <a href="#featured-lab">Featured lab article</a>
             <a href="#proxmox-progress">Proxmox progress</a>
+            <a href="#architecture-study">Architecture study</a>
             <a href="#technology">Technology</a>
             <a href="#automation">Automation</a>
             <a href="#strategy">Architecture strategy</a>
@@ -107,6 +108,41 @@
                 </div>
               </div>
             </section>
+
+            <hr class="my-5" id="architecture-study">
+<section>
+  <p class="section-label">Architecture study · September 2026</p>
+  <h2>Comparing two OT segmentation concepts</h2>
+
+  <p class="fs-5">
+    Before implementing the next stage of the OT lab, two alternative
+    segmentation architectures were modelled and validated in Cisco
+    Packet Tracer.
+  </p>
+
+  <p>
+    Concept A uses a Layer 3 core with SVIs and ACL enforcement.
+    Concept B moves the VLAN gateways to tagged Layer 3 firewall
+    subinterfaces, allowing inter-VLAN communication to be controlled
+    through centralised firewall security policy.
+  </p>
+
+  <div class="status-panel mt-4 d-flex flex-column flex-lg-row
+              justify-content-between align-items-lg-center gap-3">
+    <div>
+      <h3 class="h5 mb-2">OT Segmentation Architecture Study</h3>
+      <p class="mb-0 text-secondary">
+        See the Packet Tracer proof of concept, architecture comparison,
+        scalability plan and the engineering reasoning behind both designs.
+      </p>
+    </div>
+
+    <a class="btn btn-outline-primary rounded-pill px-4 flex-shrink-0"
+       href="ot-segmentation-architecture-concepts.html">
+      Read architecture study
+    </a>
+  </div>
+</section>
 
             <hr class="my-5" id="proxmox-progress">
             <section>
