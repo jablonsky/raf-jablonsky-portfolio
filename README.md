@@ -19,6 +19,7 @@ The site is focused on:
 - `index.html` — main OT Network Engineer portfolio homepage
 - `profile.html` — profile, experience, curriculum, and networking work
 - `docs.html` — technical documentation and LinkedIn article planning hub
+- `projects/ot-segmentation-architecture-concepts.html` — OT segmentation architecture comparison and test plan
 - `styles.css` — shared Bootstrap-based visual design
 - `script.js` — small page interactions
 - `assets/` — images, diagrams, screenshots, and future portfolio assets
@@ -30,6 +31,7 @@ The site is focused on:
 - NetSafe Auditor
 - OT Network Lab
 - Proxmox OT Security Lab progress article with PNETLab and Palo Alto evidence
+- OT segmentation architecture study comparing Layer 3 core ACLs with firewall-hosted VLAN gateways
 - Smart Factory / OT Security Lab direction
 
 ## Next content to add
@@ -47,3 +49,4 @@ The site is focused on:
 - `projects/netsafe-auditor.html`
 - `projects/ot-network-architecture-lab.html`
 - `projects/proxmox-ot-security-lab-progress.html`
+- `projects/ot-segmentation-architecture-concepts.html`
