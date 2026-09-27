@@ -20,6 +20,7 @@ The site is focused on:
 - `profile.html` — profile, experience, curriculum, and networking work
 - `docs.html` — technical documentation and LinkedIn article planning hub
 - `projects/ot-segmentation-architecture-concepts.html` — OT segmentation architecture comparison and test plan
+- `projects/ot-l3-core-acl-baseline.html` — PNETLab OT Layer 3 core implementation, validation, and ACL baseline
 - `styles.css` — shared Bootstrap-based visual design
 - `script.js` — small page interactions
 - `assets/` — images, diagrams, screenshots, and future portfolio assets

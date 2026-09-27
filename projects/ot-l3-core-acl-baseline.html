@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Practical PNETLab implementation of a five-VLAN OT Layer 3 core, routed Palo Alto transit, validation evidence, and the ACL policy planned for the next lab phase."
+    />
+    <title>Implementing the OT Layer 3 Core in PNETLab | Raf Jablonsky</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <script
+      defer
+      src="https://cloud.umami.is/script.js"
+      data-website-id="f44f6cb3-d78f-4c6e-9200-2f1eda223114"
+    ></script>
+  </head>
+  <body>
+    <nav
+      class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top"
+    >
+      <div class="container py-2">
+        <a class="navbar-brand fw-bold" href="../index.html"
+          >Raf Jablonsky<span class="brand-dot">.</span></a
+        ><button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#mainNav"
+          aria-controls="mainNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+          <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+            <li class="nav-item">
+              <a class="nav-link" href="../index.html#about">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="../profile.html">Profile</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="../index.html#capabilities"
+                >Capabilities</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="../index.html#projects">Projects</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="../docs.html">Docs</a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="btn btn-primary rounded-pill px-4"
+                href="../index.html#contact"
+                >Contact</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <header class="docs-hero">
+      <div class="container">
+        <a
+          class="text-secondary text-decoration-none"
+          href="ot-network-architecture-lab.html"
+          >← Back to OT Network Lab</a
+        >
+        <p class="section-label mt-4">Implementation checkpoint · September 2026</p>
+        <h1 class="section-title">Implementing the OT Layer 3 Core in PNETLab</h1>
+        <p class="lead text-secondary mt-4 content-width">
+          Five OT VLANs, a routed firewall transit, and the final unrestricted
+          connectivity baseline before inter-VLAN ACL enforcement begins.
+        </p>
+      </div>
+    </header>
+    <main class="section-padding">
+      <div class="container">
+        <div class="row g-4">
+          <aside class="col-lg-3">
+            <div class="docs-card docs-sidebar p-3">
+              <a href="#checkpoint">Checkpoint</a
+              ><a href="#topology">Topology</a
+              ><a href="#vlans">VLAN plan</a
+              ><a href="#routing">Routing evidence</a
+              ><a href="#troubleshooting">Troubleshooting</a
+              ><a href="#policy">ACL policy</a
+              ><a href="#rollout">Rollout plan</a>
+            </div>
+          </aside>
+          <section class="col-lg-9">
+            <article class="docs-card docs-content p-4 p-lg-5">
+              <section id="checkpoint">
+                <p class="section-label">From concept to implementation</p>
+                <h2>A measurable Layer 3 baseline</h2>
+                <p class="fs-5">
+                  The earlier architecture study compared a Layer 3 core with
+                  distributed ACLs against firewall-hosted VLAN gateways. This
+                  phase implements the Layer 3 core concept in PNETLab so its
+                  behaviour can be measured before access controls are added.
+                </p>
+                <p>
+                  OT-CORE-SW-01 owns the switched virtual interfaces for five
+                  OT VLANs. A separate routed <code>/30</code> link connects the
+                  core to the Palo Alto OT boundary. The access switch carries
+                  only the required VLANs over an 802.1Q trunk.
+                </p>
+                <div class="status-panel my-4">
+                  <span class="badge rounded-pill text-bg-success mb-3"
+                    >Baseline validated</span
+                  >
+                  <p class="mb-0">
+                    Every test endpoint can reach its gateway, the other OT
+                    test VLANs, and the Exit-OT firewall interface. This
+                    deliberate any-to-any state provides a known-good routing
+                    baseline before ACLs begin removing unnecessary paths.
+                  </p>
+                </div>
+              </section>
+
+              <hr class="my-5" id="topology" />
+              <section>
+                <p class="section-label">Current PNETLab build</p>
+                <h2>The newest OT topology</h2>
+                <figure class="screenshot-card large my-4">
+                  <img
+                    src="../assets/ot-architecture/ot-l3-core-acl-baseline.png"
+                    alt="PNETLab topology showing an OT Layer 3 core, OT access switch, five OT VLAN endpoints, and a routed transit to the Exit-OT Palo Alto firewall interface"
+                    loading="lazy"
+                  />
+                  <figcaption>
+                    <strong>Implementation checkpoint:</strong> OT-CORE-SW-01
+                    routes VLANs 110, 120, 130, 140 and 190 and uses
+                    <code>10.20.10.2/30</code> on a routed physical interface
+                    toward Exit-OT at <code>10.20.10.1/30</code>.
+                  </figcaption>
+                </figure>
+                <div class="row g-4 mt-1">
+                  <div class="col-md-6">
+                    <div class="feature-list-card">
+                      <h3 class="h5">Core routing</h3>
+                      <p>
+                        Cisco IOL Layer 2 software provides SVIs, inter-VLAN
+                        routing, 802.1Q trunking, and a routed
+                        <code>no switchport</code> uplink.
+                      </p>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="feature-list-card">
+                      <h3 class="h5">Access switching</h3>
+                      <p>
+                        OT-ACCESS-SW-01 places each endpoint in its intended
+                        access VLAN and carries VLANs 110, 120, 130, 140 and
+                        190 to the core.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <hr class="my-5" id="vlans" />
+              <section>
+                <p class="section-label">Addressing and role separation</p>
+                <h2>Implemented OT VLAN strategy</h2>
+                <p>
+                  Predictable three-digit VLAN IDs make the OT domain easy to
+                  recognise during configuration, troubleshooting, packet
+                  capture, and later automation. VLAN 999 is reserved as an
+                  unused native and black-hole VLAN and has no Layer 3 gateway.
+                </p>
+                <div class="table-responsive mt-4">
+                  <table class="table table-bordered align-middle">
+                    <thead class="table-light">
+                      <tr>
+                        <th scope="col">VLAN</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Subnet / gateway</th>
+                        <th scope="col">Role</th>
+                        <th scope="col">Routing / enforcement</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>110</td>
+                        <td>OT-MGMT</td>
+                        <td><code>10.110.10.0/24</code><br /><code>10.110.10.1</code></td>
+                        <td>OT engineering, monitoring and infrastructure administration</td>
+                        <td>Core SVI; restricted management policy</td>
+                      </tr>
+                      <tr>
+                        <td>120</td>
+                        <td>OT-CELL-1</td>
+                        <td><code>10.120.10.0/24</code><br /><code>10.120.10.1</code></td>
+                        <td>PLC, HMI and first simulated production cell</td>
+                        <td>Core SVI; cell ACL</td>
+                      </tr>
+                      <tr>
+                        <td>130</td>
+                        <td>OT-CELL-2</td>
+                        <td><code>10.130.10.0/24</code><br /><code>10.130.10.1</code></td>
+                        <td>Second production or training cell</td>
+                        <td>Core SVI; cell ACL</td>
+                      </tr>
+                      <tr>
+                        <td>140</td>
+                        <td>OT-SERVICES</td>
+                        <td><code>10.140.10.0/24</code><br /><code>10.140.10.1</code></td>
+                        <td>Historian, DNS, NTP and approved shared OT services</td>
+                        <td>Core SVI; service-specific ACL</td>
+                      </tr>
+                      <tr>
+                        <td>190</td>
+                        <td>TEST-LAB</td>
+                        <td><code>10.190.10.0/24</code><br /><code>10.190.10.1</code></td>
+                        <td>Experiments and temporary lab devices</td>
+                        <td>Core SVI; isolated by default</td>
+                      </tr>
+                      <tr>
+                        <td>999</td>
+                        <td>NATIVE-BLACKHOLE</td>
+                        <td>None</td>
+                        <td>Unused ports and trunk native VLAN</td>
+                        <td>No SVI and no endpoints</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+
+              <hr class="my-5" id="routing" />
+              <section>
+                <p class="section-label">Operational evidence</p>
+                <h2>Routing proved before filtering</h2>
+                <p>
+                  The core-to-firewall transit uses a dedicated routed physical
+                  interface rather than another access VLAN. OT-CORE-SW-01
+                  Ethernet0/0 is <code>10.20.10.2/30</code>; the Exit-OT
+                  firewall interface is <code>10.20.10.1/30</code>.
+                </p>
+                <div class="row g-4 mt-1">
+                  <div class="col-md-6">
+                    <div class="feature-list-card">
+                      <h3 class="h5">Validated</h3>
+                      <p>
+                        SVI state, VLAN membership, trunk forwarding,
+                        inter-VLAN reachability, firewall-interface
+                        reachability, and return routing were tested.
+                      </p>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="feature-list-card">
+                      <h3 class="h5">Recoverable</h3>
+                      <p>
+                        Device configurations were saved and exported from
+                        PNETLab as an integrity-checked startup-configuration
+                        archive before ACL work begins.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <p class="mt-4">
+                  The open baseline is intentional. If a flow fails after an
+                  ACL is introduced, the change can be compared against a
+                  network that was already proven to route correctly.
+                </p>
+              </section>
+
+              <hr class="my-5" id="troubleshooting" />
+              <section>
+                <p class="section-label">A fault worth documenting</p>
+                <h2>The duplicate address that looked like a routing limitation</h2>
+                <p>
+                  Initial tests suggested that the virtual Layer 3 switch could
+                  route between SVIs but not toward a routed physical port. The
+                  routing table and system messages showed the real cause:
+                  both ends of the transit were using
+                  <code>10.20.10.1</code>.
+                </p>
+                <div class="status-panel my-4">
+                  <p class="mb-2"><strong>Observed evidence</strong></p>
+                  <p class="mb-0">
+                    IOS reported <code>%IP-4-DUPADDR</code>, while the intended
+                    diagram assigned <code>10.20.10.2/30</code> to the core.
+                    Correcting Ethernet0/0 to that address immediately restored
+                    the expected routed path.
+                  </p>
+                </div>
+                <p>
+                  The lesson is transferable: verify the local route, interface
+                  address, ARP information, and device logs before concluding
+                  that an emulated image lacks a feature.
+                </p>
+              </section>
+
+              <hr class="my-5" id="policy" />
+              <section>
+                <p class="section-label">Next control layer</p>
+                <h2>Initial inter-VLAN ACL policy</h2>
+                <p>
+                  OT-CORE-SW-01 remains the gateway for the five OT VLANs.
+                  Extended IPv4 ACLs will be applied inbound on the SVIs so
+                  traffic is evaluated where it enters the Layer 3 core from
+                  each source VLAN.
+                </p>
+                <p>
+                  Cisco IOS ACLs are stateless. Required bidirectional flows,
+                  UDP replies, and server-initiated sessions must be represented
+                  deliberately. Complex stateful inspection remains at the Palo
+                  Alto boundary. Industrial application ports remain
+                  <strong>TBD</strong> until the traffic inventory proves they
+                  are required.
+                </p>
+                <div class="table-responsive mt-4">
+                  <table class="table table-bordered align-middle">
+                    <thead class="table-light">
+                      <tr>
+                        <th scope="col">Source</th>
+                        <th scope="col">Destination</th>
+                        <th scope="col">Approved purpose</th>
+                        <th scope="col">Baseline action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>VLAN 110<br />OT-MGMT</td>
+                        <td>OT VLANs, network devices and Exit-OT</td>
+                        <td>Authorised administration, monitoring and troubleshooting</td>
+                        <td>Permit approved management protocols; deny and log all other traffic</td>
+                      </tr>
+                      <tr>
+                        <td>VLAN 120<br />OT-CELL-1</td>
+                        <td>Own SVI, VLAN 140 and Exit-OT</td>
+                        <td>Gateway diagnostics, required OT services and approved northbound conduits</td>
+                        <td>Permit documented services only; deny VLANs 130 and 190 and all other traffic</td>
+                      </tr>
+                      <tr>
+                        <td>VLAN 130<br />OT-CELL-2</td>
+                        <td>Own SVI, VLAN 140 and Exit-OT</td>
+                        <td>Gateway diagnostics, required OT services and approved northbound conduits</td>
+                        <td>Permit documented services only; deny VLANs 120 and 190 and all other traffic</td>
+                      </tr>
+                      <tr>
+                        <td>VLAN 140<br />OT-SERVICES</td>
+                        <td>Own SVI, VLANs 120/130 and Exit-OT</td>
+                        <td>DNS, NTP, historian and approved server-initiated flows</td>
+                        <td>Permit documented service flows only; deny and log all other traffic</td>
+                      </tr>
+                      <tr>
+                        <td>VLAN 190<br />TEST-LAB</td>
+                        <td>Own SVI, production OT VLANs and Exit-OT</td>
+                        <td>Isolated experiments and specifically approved temporary tests</td>
+                        <td>Deny production access by default; allow only time-bounded exceptions</td>
+                      </tr>
+                      <tr>
+                        <td>Any OT VLAN</td>
+                        <td>Any other destination</td>
+                        <td>No documented operational or engineering requirement</td>
+                        <td>Deny and log</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+
+              <hr class="my-5" id="rollout" />
+              <section>
+                <p class="section-label">Controlled change</p>
+                <h2>How ACL enforcement will be introduced</h2>
+                <div class="workflow-grid mt-4">
+                  <div>
+                    <span>STAGE 0</span><strong>Preserve the baseline</strong>
+                    <p>
+                      Keep the verified PNETLab configuration archive and
+                      console access available for rollback.
+                    </p>
+                  </div>
+                  <div>
+                    <span>STAGE 1</span><strong>Review before applying</strong>
+                    <p>
+                      Build one ACL offline and check sequence numbers,
+                      wildcard masks, permits, and the final deny/log entry.
+                    </p>
+                  </div>
+                  <div>
+                    <span>STAGE 2</span><strong>Pilot one SVI</strong>
+                    <p>
+                      Apply the ACL inbound to a non-management SVI and test
+                      allowed flows, blocked flows, and ACL counters.
+                    </p>
+                  </div>
+                  <div>
+                    <span>STAGE 3</span><strong>Expand carefully</strong>
+                    <p>
+                      Repeat for the remaining cell, service, and test VLANs.
+                      Apply the management ACL last to reduce lockout risk.
+                    </p>
+                  </div>
+                </div>
+                <div class="status-panel mt-4">
+                  <p class="mb-2"><strong>Acceptance criteria</strong></p>
+                  <p class="mb-0">
+                    Approved flows succeed; prohibited cell-to-cell and
+                    test-to-production paths fail; management remains
+                    available; ACL counters support the observed result; and no
+                    undocumented permit remains.
+                  </p>
+                </div>
+                <div class="d-flex flex-column flex-sm-row gap-3 mt-4">
+                  <a
+                    class="btn btn-primary rounded-pill px-4"
+                    href="ot-segmentation-architecture-concepts.html"
+                    >Read the architecture comparison</a
+                  ><a
+                    class="btn btn-outline-dark rounded-pill px-4"
+                    href="ot-network-architecture-lab.html"
+                    >Explore the OT Network Lab</a
+                  >
+                </div>
+              </section>
+            </article>
+          </section>
+        </div>
+      </div>
+    </main>
+    <footer class="py-4 border-top bg-white">
+      <div
+        class="container d-flex flex-column flex-md-row justify-content-between gap-2 text-secondary small"
+      >
+        <span>© 2026 Raf Jablonsky Portfolio</span
+        ><span
+          >Industrial Networking • OT Cybersecurity • Network Security
+          Strategy</span
+        >
+      </div>
+    </footer>
+    <button class="back-to-top" type="button" aria-label="Back to top">
+      ↑ Top
+    </button>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../script.js"></script>
+  </body>
+</html>

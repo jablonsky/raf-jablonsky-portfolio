@@ -396,23 +396,23 @@
                 <p>
                   The Packet Tracer models are not the final architecture. They
                   are preliminary engineering evidence used to decide what
-                  should be implemented and measured next. Concept B will now be
-                  recreated on the Palo Alto VM with tagged Layer 3
-                  subinterfaces and explicit security zones, while Concept A
-                  remains available as the Layer 3 core and ACL baseline.
+                  should be implemented and measured next. The first PNETLab
+                  implementation now uses Concept A: five OT VLAN gateways on a
+                  Layer 3 core, a routed firewall transit, and ACL enforcement
+                  planned on the core SVIs. Concept B remains the centralised
+                  firewall-policy comparison for a later controlled test.
                 </p>
                 <p>
-                  The resulting tests will feed later portfolio articles
-                  covering implementation, firewall policy, scalability,
-                  performance data and the final architecture decision. Each
-                  article can therefore link back to the assumptions and proof
-                  established here.
+                  The next article records the implemented VLAN plan, newest
+                  topology, routing evidence, configuration backup, a duplicate
+                  address fault, and the policy matrix that will guide the first
+                  ACL rollout.
                 </p>
                 <div class="d-flex flex-column flex-sm-row gap-3 mt-4">
                   <a
                     class="btn btn-primary rounded-pill px-4"
-                    href="proxmox-ot-security-lab-progress.html"
-                    >Proxmox lab progress</a
+                    href="ot-l3-core-acl-baseline.html"
+                    >Layer 3 core implementation</a
                   ><a
                     class="btn btn-outline-dark rounded-pill px-4"
                     href="ot-network-architecture-lab.html"

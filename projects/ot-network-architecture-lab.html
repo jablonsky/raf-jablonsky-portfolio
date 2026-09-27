@@ -124,6 +124,25 @@
               </div>
             </section>
 
+            <hr class="my-5" id="l3-core-acl-baseline">
+            <section>
+              <p class="section-label">Implementation checkpoint · September 2026</p>
+              <h2>OT Layer 3 core and pre-ACL baseline</h2>
+              <p class="fs-5">The selected Layer 3 core concept is now running in PNETLab with five OT VLANs, an 802.1Q access trunk, and a routed transit to the Palo Alto OT boundary.</p>
+              <p>The implementation article records the VLAN strategy, newest topology, endpoint and firewall reachability, the duplicate-address fault that initially obscured the routed uplink, the exported rollback configuration, and the policy matrix for the first ACL deployment.</p>
+              <figure class="screenshot-card large my-4">
+                <img src="../assets/ot-architecture/ot-l3-core-acl-baseline.png" alt="PNETLab topology showing the OT Layer 3 core, access switch, five OT VLAN endpoints, and routed Palo Alto transit" loading="lazy">
+                <figcaption><strong>Current checkpoint:</strong> routing is deliberately unrestricted and fully validated before least-privilege ACLs are introduced one SVI at a time.</figcaption>
+              </figure>
+              <div class="status-panel mt-4 d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+                <div>
+                  <h3 class="h5 mb-2">Implementing the OT Layer 3 Core in PNETLab</h3>
+                  <p class="mb-0 text-secondary">Follow the transition from conceptual architecture to a recoverable, tested implementation and its planned ACL control model.</p>
+                </div>
+                <a class="btn btn-outline-primary rounded-pill px-4 flex-shrink-0" href="ot-l3-core-acl-baseline.html">Read implementation article</a>
+              </div>
+            </section>
+
             <hr class="my-5" id="proxmox-progress">
             <section>
               <p class="section-label">Latest lab update · September 2026</p>
