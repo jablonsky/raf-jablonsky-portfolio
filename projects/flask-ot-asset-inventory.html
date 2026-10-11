@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Building a Flask-based OT network asset inventory: current progress, the importance of OT asset visibility, role-based access, and a roadmap towards Netmiko integration.">
+  <title>Building a Flask OT Asset Inventory | Raf Jablonsky</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+  <script defer src="https://cloud.umami.is/script.js" data-website-id="f44f6cb3-d78f-4c6e-9200-2f1eda223114"></script>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
+    <div class="container py-2">
+      <a class="navbar-brand fw-bold" href="../index.html">Raf Jablonsky<span class="brand-dot">.</span></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+          <li class="nav-item"><a class="nav-link" href="../index.html#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="../profile.html">Profile</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#capabilities">Capabilities</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#projects">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#strategy">Strategy</a></li>
+          <li class="nav-item"><a class="nav-link" href="../docs.html">Docs</a></li>
+          <li class="nav-item"><a class="btn btn-primary rounded-pill px-4" href="../index.html#contact">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <header class="project-hero inventory-hero">
+    <div class="container">
+      <a class="text-white-50 text-decoration-none" href="../index.html#projects">← Back to projects</a>
+      <div class="row align-items-center g-5 mt-2">
+        <div class="col-lg-7">
+          <span class="badge rounded-pill text-bg-light mb-3">Flask learning project · October 2026</span>
+          <h1 class="display-4 fw-bold lh-1 text-white mb-4">Building a Flask-Based OT Network Asset Inventory</h1>
+          <p class="lead text-white-75 mb-4">A practical learning project for recording OT devices, classifying them by network zone and Purdue level, and creating a foundation for future device interaction with Netmiko.</p>
+          <div class="d-flex flex-column flex-sm-row gap-3 mb-4">
+            <a class="btn btn-light btn-lg rounded-pill px-4" href="#project">Read the article</a>
+            <span class="btn btn-outline-light btn-lg rounded-pill px-4 disabled" aria-disabled="true">Repository coming soon</span>
+          </div>
+          <div class="d-flex flex-wrap gap-2">
+            <span class="badge rounded-pill text-bg-dark border border-light-subtle">Python</span>
+            <span class="badge rounded-pill text-bg-dark border border-light-subtle">Flask</span>
+            <span class="badge rounded-pill text-bg-dark border border-light-subtle">SQLAlchemy</span>
+            <span class="badge rounded-pill text-bg-dark border border-light-subtle">SQLite</span>
+            <span class="badge rounded-pill text-bg-dark border border-light-subtle">Bootstrap</span>
+            <span class="badge rounded-pill text-bg-dark border border-light-subtle">OT asset management</span>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="project-preview-card shadow-lg">
+            <img src="../assets/ot-inventory/dashboard-bright.png" alt="Bright OT IP Inventory dashboard with links to register and review industrial assets">
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="section-padding">
+    <div class="container">
+      <div class="row g-4 align-items-start">
+        <aside class="col-lg-3">
+          <div class="docs-card docs-sidebar p-3">
+            <a href="#project">Project purpose</a>
+            <a href="#importance">Why inventory matters</a>
+            <a href="#progress">Progress so far</a>
+            <a href="#information-flow">Information flow</a>
+            <a href="#interface">Application views</a>
+            <a href="#access">Access control</a>
+            <a href="#lessons">Learning outcomes</a>
+            <a href="#roadmap">Netmiko roadmap</a>
+            <a href="#references">References</a>
+          </div>
+        </aside>
+
+        <section class="col-lg-9">
+          <article class="docs-card docs-content p-4 p-lg-5">
+            <section id="project">
+              <p class="section-label">Project progress article</p>
+              <h2>Turning a device list into a structured OT engineering record</h2>
+              <p class="fs-5">I have started building a small OT network inventory application with Flask. The immediate goal is deliberately simple: understand the complete path from an HTML form to validation, a Python object, a database record, and a useful page for the engineer.</p>
+              <p>This is an educational application that I am rebuilding and extending step by step. Keeping the code clear is more important than adding complexity too early. The project gives me a practical way to strengthen my understanding of Flask while working on a subject directly connected to industrial networking and OT cybersecurity.</p>
+
+              <div class="row g-3 my-4">
+                <div class="col-md-3"><div class="mini-stat"><strong>Flask</strong><span>Application and routes</span></div></div>
+                <div class="col-md-3"><div class="mini-stat"><strong>SQLite</strong><span>Local inventory data</span></div></div>
+                <div class="col-md-3"><div class="mini-stat"><strong>3 roles</strong><span>Viewer, editor, admin</span></div></div>
+                <div class="col-md-3"><div class="mini-stat"><strong>Next</strong><span>Netmiko interaction</span></div></div>
+              </div>
+            </section>
+
+            <hr class="my-5" id="importance">
+            <section>
+              <p class="section-label">The engineering reason</p>
+              <h2>Why asset inventory matters in an OT network</h2>
+              <p>An organisation cannot protect, maintain, or recover equipment it does not know it has. This is especially important in OT, where network switches, firewalls, PLCs, HMIs, SCADA servers, historians, engineering workstations, and supporting infrastructure may remain in service for many years.</p>
+              <p>A useful OT inventory is more than a list of IP addresses. It should help an engineer answer practical questions:</p>
+              <ul>
+                <li>What is connected to the industrial network, and where is it located?</li>
+                <li>Which vendor and model are in service, and how can the physical unit be identified?</li>
+                <li>Which site, VLAN, Purdue level, and security zone does the asset belong to?</li>
+                <li>Is the asset active, under maintenance, inactive, or decommissioned?</li>
+                <li>Which systems may be affected by a vulnerability, failure, or proposed change?</li>
+              </ul>
+              <p>This information supports vulnerability management, maintenance planning, segmentation reviews, incident response, lifecycle decisions, and recovery priorities. It also gives engineering and cybersecurity teams a shared reference instead of relying on disconnected spreadsheets, diagrams, and personal knowledge.</p>
+              <div class="status-panel my-4">
+                <h3 class="h5 mt-0">Inventory and taxonomy belong together</h3>
+                <p class="mb-0">Recent joint guidance led by CISA describes an OT inventory as a regularly updated record and recommends supplementing it with a taxonomy that classifies assets by function and criticality. The Purdue level and zone fields in this learning project are an early step towards that richer operational context.</p>
+              </div>
+            </section>
+
+            <hr class="my-5" id="progress">
+            <section>
+              <p class="section-label">Current milestone</p>
+              <h2>What the application can do today</h2>
+              <p>The current version has moved beyond a static interface. It now provides a working database-backed workflow with authentication and role-aware actions.</p>
+              <div class="workflow-grid my-4">
+                <div><span>01</span><strong>Create an inventory record</strong><p>Validated forms capture identity, addressing, manufacturer, location, classification, status, and notes.</p></div>
+                <div><span>02</span><strong>Review the complete inventory</strong><p>A single table presents the key identity, network, site, Purdue, zone, and status fields.</p></div>
+                <div><span>03</span><strong>Open and update an asset</strong><p>Detail and edit views separate routine review from controlled record maintenance.</p></div>
+                <div><span>04</span><strong>Control application access</strong><p>Authentication and viewer, editor, and administrator roles restrict sensitive actions.</p></div>
+              </div>
+              <p>The application uses an application factory, a Flask blueprint, SQLAlchemy models, Flask-Migrate database migrations, Flask-WTF forms, password hashing, login sessions, and Bootstrap templates. SQLite keeps the learning environment lightweight while the data model develops.</p>
+            </section>
+
+            <hr class="my-5" id="information-flow">
+            <section>
+              <h2>Following one asset through the application</h2>
+              <p>The project has helped me understand that a new field must be connected through every layer. For example, adding the subnet prefix required a model column, a validated WTForms field, route handling, a migration, and an explicit Jinja output.</p>
+              <p>A value starts in the device form, is checked before submission, is handled by the appropriate Flask route, and is then stored in the database. The inventory and asset-detail pages deliberately select how that information is presented back to the engineer.</p>
+              <p>The current form accepts IPv4 addresses and prefix lengths from 0 to 32. IP addresses are unique, which prevents two inventory records from silently claiming the same address. Later versions can extend the design for IPv6 and introduce stronger rules for naming, sites, zones, and lifecycle data.</p>
+              <figure class="screenshot-card large my-4">
+                <img src="../assets/ot-inventory/add-device.png" alt="Bright Add OT device form with identity, addressing, status, and manufacturer fields" loading="lazy">
+                <figcaption><strong>Structured input:</strong> the add-device form captures known asset information and explains required values such as the subnet prefix.</figcaption>
+              </figure>
+            </section>
+
+            <hr class="my-5" id="interface">
+            <section>
+              <p class="section-label">Application walkthrough</p>
+              <h2>Keeping OT information readable</h2>
+              <p>The interface follows the same Bootstrap-based design direction as my Engineering Change Request project. This is intentional: the two applications may eventually form part of a wider engineering toolkit, so their navigation, cards, forms, status labels, and page structure should feel consistent.</p>
+              <div class="screenshot-gallery my-4">
+                <figure class="screenshot-card large">
+                  <img src="../assets/ot-inventory/inventory-bright.png" alt="Bright OT device inventory table showing PLCs, servers, a firewall, and a network switch with network classification fields" loading="lazy">
+                  <figcaption><strong>Inventory view:</strong> the table brings together hostname, CIDR address, type, vendor, site, Purdue level, zone, and lifecycle status.</figcaption>
+                </figure>
+                <figure class="screenshot-card">
+                  <img src="../assets/ot-inventory/asset-details.png" alt="Bright detailed OT network switch record with classification, manufacturer, location, dates, and description" loading="lazy">
+                  <figcaption><strong>Asset details:</strong> a readable record for a Cisco industrial switch, including its network context and physical location.</figcaption>
+                </figure>
+                <figure class="screenshot-card">
+                  <img src="../assets/ot-inventory/dashboard-bright.png" alt="Bright OT IP Inventory dashboard showing the register and review workflow" loading="lazy">
+                  <figcaption><strong>Guided workflow:</strong> the dashboard keeps the two main tasks—registering an asset and reviewing the inventory—clear and accessible.</figcaption>
+                </figure>
+              </div>
+            </section>
+
+            <hr class="my-5" id="access">
+            <section>
+              <h2>Adding authentication and role-based access</h2>
+              <p>An inventory contains operationally useful information, so even a learning application should not treat every visitor as an administrator. The current version supports three straightforward roles:</p>
+              <div class="row g-4 mt-1">
+                <div class="col-md-4"><div class="feature-list-card"><h3 class="h5">Viewer</h3><p>Can sign in, review the inventory, and open device details without add or edit controls.</p></div></div>
+                <div class="col-md-4"><div class="feature-list-card"><h3 class="h5">Editor</h3><p>Can review records and create or update OT assets as part of inventory maintenance.</p></div></div>
+                <div class="col-md-4"><div class="feature-list-card"><h3 class="h5">Administrator</h3><p>Can maintain assets and create authorised viewer, editor, or administrator accounts.</p></div></div>
+              </div>
+              <p class="mt-4">The interface hides unavailable actions, while the Flask routes also enforce the role requirement on the server. This distinction matters: hiding a button improves the user experience, but server-side authorisation provides the actual control.</p>
+              <div class="screenshot-gallery my-4">
+                <figure class="screenshot-card large">
+                  <img src="../assets/ot-inventory/sign-in.png" alt="Bright sign-in page for authorised OT Inventory users" loading="lazy">
+                  <figcaption><strong>Secure entry point:</strong> access to OT asset information starts with an authorised account.</figcaption>
+                </figure>
+                <figure class="screenshot-card large">
+                  <img src="../assets/ot-inventory/user-management.png" alt="Bright OT inventory user-management page listing authorised users, roles, and account status" loading="lazy">
+                  <figcaption><strong>Administration:</strong> authorised users are recorded with their email address, role, status, and creation date.</figcaption>
+                </figure>
+                <figure class="screenshot-card large">
+                  <img src="../assets/ot-inventory/create-user.png" alt="Create authorised user form with role and temporary-password fields" loading="lazy">
+                  <figcaption><strong>Role assignment:</strong> administrators can create an account and grant only the access required for the user’s responsibilities.</figcaption>
+                </figure>
+              </div>
+            </section>
+
+            <hr class="my-5" id="lessons">
+            <section>
+              <p class="section-label">Learning by rebuilding</p>
+              <h2>What this stage has taught me</h2>
+              <ul>
+                <li>A database model describes what Python expects, but migrations change the physical database structure.</li>
+                <li>Forms should validate data before the route creates or updates an object.</li>
+                <li>Template variable names must match the values passed by the route.</li>
+                <li>Each database field must be deliberately presented in the user interface.</li>
+                <li>Authorisation must be enforced at the route as well as reflected in the page.</li>
+                <li>A useful OT record needs operational context, not only a hostname and IP address.</li>
+              </ul>
+              <p>These are basic lessons, but they are exactly why I am keeping the application small and understandable. Repeating the full workflow is helping me build confidence with Flask rather than only copying a finished structure.</p>
+            </section>
+
+            <hr class="my-5" id="roadmap">
+            <section>
+              <p class="section-label">Future development</p>
+              <h2>From a manual inventory to Netmiko-assisted validation</h2>
+              <p>The next major direction is interaction with supported network assets through Netmiko. The inventory can become the source of connection targets, while a controlled collection process retrieves selected read-only facts from switches, routers, and firewalls.</p>
+              <p>A future service could compare declared inventory data with observed device data—for example hostname, platform, software version, interface state, and serial number—and record when the information was last checked. The first implementation will stay narrow, use approved read-only commands, and avoid storing credentials directly in an asset record.</p>
+              <div class="row g-4 mt-1">
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Near-term</h3><p>Improve account administration, tests, error handling, filtering, search, exports, and audit history.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Network interaction</h3><p>Add read-only Netmiko collection, supported platform profiles, safe credential handling, and last-checked evidence.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Inventory quality</h3><p>Detect differences between declared and observed facts without silently overwriting an engineer-approved record.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Wider toolkit</h3><p>Explore connections with change control so that significant inventory changes can be reviewed and evidenced.</p></div></div>
+              </div>
+              <p class="mt-4">Active discovery in OT must be introduced carefully. Device capability, process sensitivity, approved commands, rate limits, maintenance windows, logging, and ownership all need to be understood before automation touches production equipment. The lab will therefore remain the proving ground for this feature.</p>
+            </section>
+
+            <hr class="my-5" id="references">
+            <section>
+              <h2>Guidance informing the project</h2>
+              <p>This learning project is not intended to replace a production-grade asset-management platform. Its design direction is informed by broader industry guidance on building and maintaining OT visibility:</p>
+              <ul>
+                <li><a href="https://www.cisa.gov/sites/default/files/2025-08/joint-guide-foundations-for-OT-cybersecurity-asset-inventory-guidance_508c.pdf" target="_blank" rel="noopener">CISA and international partners: Foundations for OT Cybersecurity—Asset Inventory Guidance</a></li>
+                <li><a href="https://www.nccoe.nist.gov/ot/asset-management" target="_blank" rel="noopener">NIST NCCoE: Operational Technology Asset Management</a></li>
+                <li><a href="https://www.nist.gov/cyberframework" target="_blank" rel="noopener">NIST Cybersecurity Framework 2.0</a></li>
+              </ul>
+            </section>
+
+            <div class="contact-panel text-center mt-5">
+              <p class="section-label">Project status</p>
+              <h2 class="section-title mx-auto">A working foundation, built one understandable step at a time.</h2>
+              <p class="text-secondary content-width mx-auto mt-3 mb-4">The source repository link will be added after the project is placed under version control and published.</p>
+              <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+                <a class="btn btn-primary rounded-pill px-4" href="../index.html#projects">Explore more projects</a>
+                <a class="btn btn-outline-primary rounded-pill px-4" href="../docs.html#linkedin-articles">View article hub</a>
+              </div>
+            </div>
+          </article>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer class="py-4 border-top bg-white">
+    <div class="container d-flex flex-column flex-md-row justify-content-between gap-2 text-secondary small">
+      <span>© 2026 Raf Jablonsky Portfolio</span>
+      <a class="text-secondary" href="../index.html#projects">Back to projects</a>
+    </div>
+  </footer>
+
+  <button class="back-to-top" type="button" aria-label="Back to top">↑ Top</button>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../script.js"></script>
+</body>
+</html>
