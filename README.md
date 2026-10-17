@@ -22,6 +22,7 @@ The site is focused on:
 - `projects/ot-segmentation-architecture-concepts.html` — OT segmentation architecture comparison and test plan
 - `projects/ot-l3-core-acl-baseline.html` — PNETLab OT Layer 3 core implementation, validation, and ACL baseline
 - `projects/ot-idmz-routing-policy-validation.html` — OT-to-IDMZ routing and firewall-policy validation with positive and negative tests
+- `projects/deploy-palo-alto-vm-series-on-proxmox.html` — from-scratch PAN-OS QCOW2 deployment on Proxmox with validation evidence
 - `styles.css` — shared Bootstrap-based visual design
 - `script.js` — small page interactions
 - `assets/` — images, diagrams, screenshots, and future portfolio assets
@@ -52,5 +53,6 @@ The site is focused on:
 - `projects/netsafe-auditor.html`
 - `projects/ot-network-architecture-lab.html`
 - `projects/proxmox-ot-security-lab-progress.html`
+- `projects/deploy-palo-alto-vm-series-on-proxmox.html`
 - `projects/ot-idmz-routing-policy-validation.html`
 - `projects/ot-segmentation-architecture-concepts.html`

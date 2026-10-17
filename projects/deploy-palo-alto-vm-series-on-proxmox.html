@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A practical guide to deploying a Palo Alto VM-Series firewall from a QCOW2 image on Proxmox VE, including image verification, VirtIO disk import, serial-console access, management configuration, and snapshots.">
+  <title>Deploying Palo Alto VM-Series on Proxmox | Raf Jablonsky</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+  <script defer src="https://cloud.umami.is/script.js" data-website-id="f44f6cb3-d78f-4c6e-9200-2f1eda223114"></script>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
+    <div class="container py-2">
+      <a class="navbar-brand fw-bold" href="../index.html">Raf Jablonsky<span class="brand-dot">.</span></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+          <li class="nav-item"><a class="nav-link" href="../index.html#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="../profile.html">Profile</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#capabilities">Capabilities</a></li>
+          <li class="nav-item"><a class="nav-link" href="../ot-operations.html">OT Operations</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#projects">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="../docs.html">Docs</a></li>
+          <li class="nav-item"><a class="btn btn-primary rounded-pill px-4" href="../index.html#contact">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <header class="docs-hero">
+    <div class="container">
+      <a class="text-secondary text-decoration-none" href="proxmox-ot-security-lab-progress.html">← Back to Proxmox OT Security Lab</a>
+      <p class="section-label mt-4">Practical deployment guide · October 2026</p>
+      <h1 class="section-title">Deploying Palo Alto VM-Series on Proxmox from scratch</h1>
+      <p class="lead text-secondary mt-4 content-width">A repeatable build that turns a standalone PAN-OS QCOW2 image into an independently managed firewall VM with verified storage, safe networking, serial-console access, and a clean rollback point.</p>
+    </div>
+  </header>
+
+  <main class="section-padding">
+    <div class="container">
+      <div class="row g-4">
+        <aside class="col-lg-3">
+          <div class="docs-card docs-sidebar p-3">
+            <a href="#outcome">Outcome</a>
+            <a href="#transfer">Transfer and verify</a>
+            <a href="#vm-shell">Build the VM shell</a>
+            <a href="#disk">Import the disk</a>
+            <a href="#console">Serial console and boot</a>
+            <a href="#management">Management access</a>
+            <a href="#snapshot">Snapshot and reuse</a>
+            <a href="#lessons">Lessons learned</a>
+          </div>
+        </aside>
+
+        <section class="col-lg-9">
+          <article class="docs-card docs-content p-4 p-lg-5">
+            <section id="outcome">
+              <p class="section-label">Independent firewall appliance</p>
+              <h2>Outcome</h2>
+              <p class="fs-5">The finished VM runs PAN-OS 11 directly on Proxmox/KVM rather than inside a network-emulation platform. This removes a nested virtualisation layer and produced a noticeably faster management experience in the lab.</p>
+              <div class="row g-3 my-4">
+                <div class="col-md-3"><div class="mini-stat"><strong>PAN-OS 11</strong><span>QCOW2 base image</span></div></div>
+                <div class="col-md-3"><div class="mini-stat"><strong>4 vCPU</strong><span>CPU type: host</span></div></div>
+                <div class="col-md-3"><div class="mini-stat"><strong>11 GiB</strong><span>Fixed memory</span></div></div>
+                <div class="col-md-3"><div class="mini-stat"><strong>60 GiB</strong><span>VirtIO boot disk</span></div></div>
+              </div>
+              <div class="status-panel my-4">
+                <span class="badge rounded-pill text-bg-success mb-3">Validated result</span>
+                <p class="mb-0">The firewall booted successfully, accepted a static management configuration, and presented the PAN-OS web interface at its dedicated lab address.</p>
+              </div>
+              <p class="small text-secondary">This procedure assumes a legitimately obtained Palo Alto VM-Series KVM image and appropriate licensing. Example addresses are private lab values and should be replaced for another environment.</p>
+            </section>
+
+            <hr class="my-5" id="transfer">
+            <section>
+              <p class="section-label">Stage 1</p>
+              <h2>Transfer and verify the QCOW2 image</h2>
+              <p>The source image was copied from the workstation to temporary storage on the Proxmox host. The transfer must be initiated from the workstation because the local file path does not exist inside the Proxmox shell.</p>
+              <pre><code>scp "/path/to/PA-VM-KVM-11.0.0.qcow2" \
+  root@&lt;PROXMOX-IP&gt;:/var/lib/vz/</code></pre>
+              <figure class="screenshot-card large my-4">
+                <img src="../assets/ot-lab/paloalto-proxmox-deployment/qcow2-transfer-complete.png" alt="Terminal showing the Palo Alto QCOW2 image transferred successfully to the Proxmox host" loading="lazy">
+                <figcaption><strong>Transfer checkpoint:</strong> the workstation reports a completed copy and the Proxmox shell confirms the image is present.</figcaption>
+              </figure>
+              <p>File size alone was not treated as proof of integrity. SHA-256 was calculated on both systems and the values were compared before the VM was created.</p>
+              <pre><code># Workstation
+sha256sum /path/to/PA-VM-KVM-11.0.0.qcow2
+
+# Proxmox host
+sha256sum /var/lib/vz/PA-VM-KVM-11.0.0.qcow2</code></pre>
+              <figure class="screenshot-card large my-4">
+                <img src="../assets/ot-lab/paloalto-proxmox-deployment/checksum-verification.png" alt="Matching SHA-256 checksums for the Palo Alto image on the workstation and Proxmox server" loading="lazy">
+                <figcaption><strong>Integrity checkpoint:</strong> matching hashes confirm that the image arrived without corruption.</figcaption>
+              </figure>
+            </section>
+
+            <hr class="my-5" id="vm-shell">
+            <section>
+              <p class="section-label">Stage 2</p>
+              <h2>Create a safe, empty VM shell</h2>
+              <p>A QCOW2 file contains the appliance disk but not a complete Proxmox hardware definition. The VM therefore needs to be created without installation media and without the wizard's placeholder disk.</p>
+              <ul>
+                <li><strong>BIOS:</strong> SeaBIOS; default i440fx machine.</li>
+                <li><strong>CPU:</strong> one socket, four cores, type <code>host</code>.</li>
+                <li><strong>Memory:</strong> 11&nbsp;GiB with ballooning disabled.</li>
+                <li><strong>Management NIC:</strong> VirtIO on the management bridge, initially marked disconnected.</li>
+                <li><strong>Guest agent:</strong> disabled.</li>
+              </ul>
+              <p>Keeping the management NIC disconnected is an important safety control: a factory firewall may use a default address that conflicts with an existing gateway or device.</p>
+            </section>
+
+            <hr class="my-5" id="disk">
+            <section>
+              <p class="section-label">Stage 3</p>
+              <h2>Import and attach the PAN-OS disk</h2>
+              <p>The verified image was imported into the Proxmox LVM-thin storage assigned to the firewall VM:</p>
+              <pre><code>qm importdisk &lt;VMID&gt; \
+  /var/lib/vz/PA-VM-KVM-11.0.0.qcow2 \
+  local-lvm</code></pre>
+              <p>After import, the volume appears as an unused disk. It was attached as <code>virtio0</code>, with default no-cache behaviour and I/O threading enabled. The VM boot order was then reduced to the VirtIO disk only.</p>
+              <figure class="screenshot-card large my-4">
+                <img src="../assets/ot-lab/paloalto-proxmox-deployment/proxmox-vm-hardware.png" alt="Proxmox hardware page showing the Palo Alto VM with four host CPU cores, 11 GiB memory, a 60 GiB VirtIO disk, and disconnected management interface" loading="lazy">
+                <figcaption><strong>Hardware checkpoint:</strong> the imported 60&nbsp;GiB disk is attached as <code>virtio0</code>; the management NIC remains disconnected.</figcaption>
+              </figure>
+            </section>
+
+            <hr class="my-5" id="console">
+            <section>
+              <p class="section-label">Stage 4</p>
+              <h2>Add a serial console and complete the first boot</h2>
+              <p>A serial port was added at index <code>0</code>, and the Proxmox display was changed to <strong>Serial terminal 0</strong>. This provides reliable console access during the initial PAN-OS boot, before management networking is enabled.</p>
+              <figure class="screenshot-card large my-4">
+                <img src="../assets/ot-lab/paloalto-proxmox-deployment/serial-console-configuration.png" alt="Proxmox hardware configuration showing Serial terminal 0 and serial0 socket for the Palo Alto firewall VM" loading="lazy">
+                <figcaption><strong>Console checkpoint:</strong> <code>serial0</code> uses a socket and the display is mapped to the same terminal.</figcaption>
+              </figure>
+              <p>The first boot was allowed to complete without reconnecting the management NIC. The appearance of <code>vm login:</code> confirmed that the system reached an interactive PAN-OS console.</p>
+              <figure class="screenshot-card large my-4">
+                <img src="../assets/ot-lab/paloalto-proxmox-deployment/panos-first-boot.png" alt="Palo Alto serial console reaching the VM login prompt after first boot on Proxmox" loading="lazy">
+                <figcaption><strong>Boot checkpoint:</strong> PAN-OS reaches the login prompt and reports that its master process started successfully.</figcaption>
+              </figure>
+              <p>After the mandatory administrator-password change, the software version and platform type were confirmed from the operational CLI.</p>
+              <pre><code>show system info | match sw-version
+show system info | match model</code></pre>
+              <figure class="screenshot-card large my-4">
+                <img src="../assets/ot-lab/paloalto-proxmox-deployment/panos-version-validation.png" alt="Palo Alto CLI showing PAN-OS software version 11.0.0 and PA-VM model" loading="lazy">
+                <figcaption><strong>Platform checkpoint:</strong> the appliance reports PAN-OS 11.0.0 and model PA-VM.</figcaption>
+              </figure>
+            </section>
+
+            <hr class="my-5" id="management">
+            <section>
+              <p class="section-label">Stage 5</p>
+              <h2>Configure management access before connecting the NIC</h2>
+              <p>An unused address outside the local DHCP pool was selected, then configured from the serial console. Replace the example values below with addresses appropriate to the target network.</p>
+              <pre><code>configure
+set deviceconfig system type static
+set deviceconfig system ip-address &lt;MGMT-IP&gt; netmask &lt;NETMASK&gt; default-gateway &lt;GATEWAY&gt;
+set deviceconfig system dns-setting servers primary &lt;DNS-IP&gt;
+set deviceconfig system hostname &lt;HOSTNAME&gt;
+commit</code></pre>
+              <p>Only after a successful commit was the Proxmox <strong>Disconnect</strong> flag cleared on <code>net0</code>. Ping and HTTPS were then used to validate management access.</p>
+              <figure class="screenshot-card large my-4">
+                <img src="../assets/ot-lab/paloalto-proxmox-deployment/panos-web-interface.png" alt="Working PAN-OS 11 web interface opened from the independently deployed Proxmox firewall VM" loading="lazy">
+                <figcaption><strong>Operational checkpoint:</strong> the PAN-OS web interface is responsive and ready for controlled interface, routing, and policy configuration.</figcaption>
+              </figure>
+            </section>
+
+            <hr class="my-5" id="snapshot">
+            <section>
+              <p class="section-label">Stage 6</p>
+              <h2>Create a clean rollback point and reusable base</h2>
+              <p>Before adding dataplane interfaces or policies, PAN-OS was shut down cleanly and a snapshot was created without RAM. This preserves a known-good point with management access.</p>
+              <pre><code>request shutdown system</code></pre>
+              <figure class="screenshot-card large my-4">
+                <img src="../assets/ot-lab/paloalto-proxmox-deployment/clean-snapshot.png" alt="Proxmox snapshot view showing a clean PAN-OS 11 management baseline snapshot" loading="lazy">
+                <figcaption><strong>Recovery checkpoint:</strong> a clean snapshot separates the validated base build from later network and policy experiments.</figcaption>
+              </figure>
+              <div class="status-panel mt-4">
+                <h3 class="h5 mt-0">Template strategy</h3>
+                <p class="mb-0">For future labs, create a full clone, keep its management NIC disconnected, and convert the clone—not the working firewall—into a Proxmox template. Every deployed clone must receive a unique management address, identity, and appropriate licence before being connected.</p>
+              </div>
+            </section>
+
+            <hr class="my-5" id="lessons">
+            <section>
+              <p class="section-label">Engineering reflection</p>
+              <h2>Lessons learned</h2>
+              <div class="row g-4 mt-1">
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Verify before importing</h3><p>A matching cryptographic hash is stronger evidence than a rounded file-size display.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Disconnect before configuring</h3><p>Keeping the management NIC down prevents factory addressing from creating a network conflict.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Understand the appliance format</h3><p>Unlike an OVA, a QCOW2 image supplies a disk but not the VM hardware definition, so CPU, memory, console, network, and boot settings must be created.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Preserve a known-good state</h3><p>A snapshot and golden template shorten recovery and make later lab branches repeatable.</p></div></div>
+              </div>
+              <p class="mt-4">Running the firewall directly on Proxmox also provided a useful comparison with the nested PNETLab deployment. The direct KVM instance felt more than three times faster during management tasks, making it the stronger candidate for future independent firewall testing.</p>
+            </section>
+
+            <div class="contact-panel text-center mt-5">
+              <p class="section-label">Continue exploring</p>
+              <h2 class="section-title mx-auto">From virtual appliance to OT security boundary.</h2>
+              <p class="text-secondary content-width mx-auto mt-3 mb-4">The wider OT Network Lab documents how Proxmox, PNETLab, routed switching, industrial DMZ design, and Palo Alto security policy work together.</p>
+              <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+                <a class="btn btn-primary rounded-pill px-4" href="proxmox-ot-security-lab-progress.html">Read the lab progress article</a>
+                <a class="btn btn-outline-primary rounded-pill px-4" href="ot-network-architecture-lab.html">Explore the OT Network Lab</a>
+              </div>
+            </div>
+          </article>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer class="py-4 border-top bg-white">
+    <div class="container d-flex flex-column flex-md-row justify-content-between gap-2 text-secondary small">
+      <span>© 2026 Raf Jablonsky Portfolio</span>
+      <a class="text-secondary" href="../docs.html">Documentation hub</a>
+    </div>
+  </footer>
+  <button class="back-to-top" type="button" aria-label="Back to top">↑ Top</button>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../script.js"></script>
+</body>
+</html>

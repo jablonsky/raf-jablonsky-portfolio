@@ -47,6 +47,7 @@
             <a href="#overview">Overview</a>
             <a href="#project-docs">Project docs</a>
             <a href="#routing-validation">Routing validation</a>
+            <a href="#paloalto-proxmox">Palo Alto deployment</a>
             <a href="#lab-update">Proxmox baseline</a>
             <a href="#architecture-study">Architecture study</a>
             <a href="#technical-notes">Technical notes</a>
@@ -73,6 +74,7 @@
                 <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Packet Insight</h3><p>Scientific PCAP analytics, case-based packet investigation, statistics, and professional reporting.</p><a href="projects/packet-insight.html">Open case study</a></div></div>
                 <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">NetSafe Auditor</h3><p>Future device inspection, configuration auditing, baseline comparison, and structured audit reports.</p><a href="projects/netsafe-auditor.html">Open case study</a></div></div>
                 <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">OT Network Lab</h3><p>Architecture, Proxmox, PNETLab, automation, segmentation, routing, switching, and OT security controls.</p><a href="projects/ot-network-architecture-lab.html">Open case study</a></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Palo Alto VM-Series on Proxmox</h3><p>A practical QCOW2-to-VM deployment guide with integrity checks, VirtIO storage, serial-console access, and snapshot strategy.</p><a href="projects/deploy-palo-alto-vm-series-on-proxmox.html">Open deployment guide</a></div></div>
                 <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">OT Network Asset Inventory</h3><p>Flask, SQLite, role-based access, OT classification, and a future roadmap for Netmiko-assisted device validation.</p><a href="projects/flask-ot-asset-inventory.html">Open progress article</a></div></div>
               </div>
             </section>
@@ -89,6 +91,21 @@
                   <p class="mb-0 text-secondary">See why one successful ping is not enough to demonstrate segmentation and how the deny tests strengthen the result.</p>
                 </div>
                 <a class="btn btn-outline-primary rounded-pill px-4 flex-shrink-0" href="projects/ot-idmz-routing-policy-validation.html">Read validation article</a>
+              </div>
+            </section>
+
+            <hr class="my-5" id="paloalto-proxmox">
+            <section>
+              <p class="section-label">Deployment guide · October 2026</p>
+              <h2>Deploying Palo Alto VM-Series on Proxmox from scratch</h2>
+              <p class="fs-5">A concise, evidence-led guide for turning a PAN-OS QCOW2 image into an independent Proxmox firewall VM.</p>
+              <p>The article covers secure image transfer, checksum verification, VM hardware decisions, VirtIO disk import, serial-console access, safe management onboarding, snapshots, and a reusable template strategy.</p>
+              <div class="status-panel mt-4 d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+                <div>
+                  <h3 class="h5 mb-2">A repeatable firewall build</h3>
+                  <p class="mb-0 text-secondary">Follow the validated checkpoints from downloaded image to responsive PAN-OS management interface.</p>
+                </div>
+                <a class="btn btn-outline-primary rounded-pill px-4 flex-shrink-0" href="projects/deploy-palo-alto-vm-series-on-proxmox.html">Read deployment guide</a>
               </div>
             </section>
 
@@ -254,6 +271,7 @@
                 <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Packet Captures as Engineering Evidence</h3><p>A future article connected to Packet Insight and structured PCAP analysis.</p></div></div>
                 <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Change Control as a Cybersecurity Control</h3><p>A future article connected to the Engineering Change Request Platform and secure OT governance.</p></div></div>
                 <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Building the Proxmox OT Security Lab</h3><p>A published progress article connecting virtual infrastructure, network segmentation, firewall zones, validation evidence, and troubleshooting.</p><a href="projects/proxmox-ot-security-lab-progress.html">Read article</a></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Deploying Palo Alto VM-Series on Proxmox</h3><p>A practical deployment guide covering the QCOW2 import, serial console, management safety, and reusable VM baseline.</p><a href="projects/deploy-palo-alto-vm-series-on-proxmox.html">Read deployment guide</a></div></div>
                 <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Validating OT-to-IDMZ Routing and Firewall Policy</h3><p>A progress article showing an authorised OT Core path alongside reverse-direction and unauthorised-source deny tests.</p><a href="projects/ot-idmz-routing-policy-validation.html">Read validation article</a></div></div>
                 <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Designing OT Segmentation</h3><p>A preliminary architecture study comparing distributed ACL enforcement with centralised firewall policy.</p><a href="projects/ot-segmentation-architecture-concepts.html">Read architecture study</a></div></div>
                 <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Building a Flask-Based OT Network Asset Inventory</h3><p>A progress article about asset visibility, the current Flask application, role-based access, and the planned Netmiko roadmap.</p><a href="projects/flask-ot-asset-inventory.html">Read article</a></div></div>
