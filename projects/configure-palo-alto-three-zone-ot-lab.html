@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A practical configuration guide for connecting a Palo Alto VM-Series firewall on Proxmox to a PNETLab OT topology, including bridges, Layer 3 interfaces, zones, routes, management profiles, and explicit test policy.">
+  <title>Configuring Palo Alto VM-Series for a Three-Zone OT Lab | Raf Jablonsky</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+  <script defer src="https://cloud.umami.is/script.js" data-website-id="f44f6cb3-d78f-4c6e-9200-2f1eda223114"></script>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
+    <div class="container py-2">
+      <a class="navbar-brand fw-bold" href="../index.html">Raf Jablonsky<span class="brand-dot">.</span></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+          <li class="nav-item"><a class="nav-link" href="../index.html#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="../profile.html">Profile</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#capabilities">Capabilities</a></li>
+          <li class="nav-item"><a class="nav-link" href="../ot-operations.html">OT Operations</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#projects">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="../docs.html">Docs</a></li>
+          <li class="nav-item"><a class="btn btn-primary rounded-pill px-4" href="../index.html#contact">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <header class="docs-hero">
+    <div class="container">
+      <a class="text-secondary text-decoration-none" href="deploy-palo-alto-vm-series-on-proxmox.html">← Part 1: deploy the PA-VM</a>
+      <p class="section-label mt-4">Practical configuration guide · October 2026</p>
+      <h1 class="section-title">Configuring Palo Alto VM-Series for a three-zone OT lab</h1>
+      <p class="lead text-secondary mt-4 content-width">Part 2 of the firewall build: connect a Proxmox-hosted PA-VM to PNETLab, configure the IT, OT, and industrial DMZ data plane, install routes, apply least-privilege test policy, and validate the result.</p>
+    </div>
+  </header>
+
+  <main class="section-padding">
+    <div class="container">
+      <div class="row g-4">
+        <aside class="col-lg-3">
+          <div class="docs-card docs-sidebar p-3">
+            <a href="#scope">Scope and outcome</a>
+            <a href="#topology">Topology and addressing</a>
+            <a href="#bridges">Proxmox bridge mapping</a>
+            <a href="#panos">PAN-OS data plane</a>
+            <a href="#management-profile">Management profile</a>
+            <a href="#routing">Static and return routing</a>
+            <a href="#policy">Temporary test policy</a>
+            <a href="#validation">Validation</a>
+            <a href="#lessons">Lessons learned</a>
+          </div>
+        </aside>
+
+        <section class="col-lg-9">
+          <article class="docs-card docs-content p-4 p-lg-5">
+            <section id="scope">
+              <p class="section-label">Part 2 · Data-plane integration</p>
+              <h2>Scope and outcome</h2>
+              <p class="fs-5">The earlier deployment guide ends with a working PAN-OS management interface and a clean snapshot. This article deliberately starts at that checkpoint. It documents a different engineering problem: turning the standalone appliance into the routed security boundary for a working OT lab.</p>
+              <div class="status-panel my-4">
+                <span class="badge rounded-pill text-bg-success mb-3">Validated result</span>
+                <p class="mb-0">Three Layer 3 interfaces reached an operational state, the neighbouring IT router, OT core, and IDMZ switch reached their firewall addresses, and the PA-VM was ready for controlled inter-zone policy tests.</p>
+              </div>
+              <div class="row g-3 my-4">
+                <div class="col-md-3"><div class="mini-stat"><strong>3 zones</strong><span>IT, OT, and IDMZ</span></div></div>
+                <div class="col-md-3"><div class="mini-stat"><strong>3 bridges</strong><span>Dedicated data paths</span></div></div>
+                <div class="col-md-3"><div class="mini-stat"><strong>5 OT VLANs</strong><span>Behind the L3 core</span></div></div>
+                <div class="col-md-3"><div class="mini-stat"><strong>/32 tests</strong><span>Explicit policy scope</span></div></div>
+              </div>
+            </section>
+
+            <hr class="my-5" id="topology">
+            <section>
+              <p class="section-label">Architecture</p>
+              <h2>Topology and addressing</h2>
+              <p>The Palo Alto is the inter-zone control point. The OT core retains the gateways for the operational VLANs, while a routed <code>/30</code> transit carries traffic to the firewall. The IT router performs the same adjacent-router role on the enterprise side.</p>
+              <figure class="screenshot-card large my-4">
+                <img src="../assets/ot-lab/paloalto-three-zone-config/topology.png" alt="PNETLab topology showing the IT router, industrial DMZ, OT Layer 3 core, five OT VLAN endpoints, and three connections to the Palo Alto firewall" loading="lazy">
+                <figcaption><strong>Lab architecture:</strong> the firewall separates IT, OT, and IDMZ while the OT core routes the five internal VLANs.</figcaption>
+              </figure>
+              <div class="table-responsive">
+                <table class="table align-middle">
+                  <thead><tr><th>PA interface</th><th>Address</th><th>Zone</th><th>Adjacent device</th></tr></thead>
+                  <tbody>
+                    <tr><td><code>ethernet1/1</code></td><td><code>10.10.10.2/30</code></td><td><code>Zone-IT</code></td><td>IT router <code>10.10.10.1</code></td></tr>
+                    <tr><td><code>ethernet1/2</code></td><td><code>10.20.10.1/30</code></td><td><code>Zone-OT</code></td><td>OT core <code>10.20.10.2</code></td></tr>
+                    <tr><td><code>ethernet1/3</code></td><td><code>10.30.10.1/24</code></td><td><code>Zone-IDMZ</code></td><td>IDMZ switch <code>10.30.10.2</code></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <hr class="my-5" id="bridges">
+            <section>
+              <p class="section-label">Stage 1</p>
+              <h2>Attach the PA-VM to the existing Proxmox bridges</h2>
+              <p>The original VM 101 supplied a known-good reference. Its hardware view showed one management adapter and three data adapters, each assigned to a separate Proxmox bridge.</p>
+              <figure class="screenshot-card large my-4">
+                <img src="../assets/ot-lab/paloalto-three-zone-config/pa-vm101-hardware.png" alt="Proxmox hardware view for PA-VM 101 showing net0 on vmbr0 and three E1000 data adapters on vmbr1, vmbr2, and vmbr3" loading="lazy">
+                <figcaption><strong>Reference mapping:</strong> VM 101 confirms the bridge order used by the established topology.</figcaption>
+              </figure>
+              <p>The replacement VM 102 initially had only <code>net0</code> on <code>vmbr0</code>. PAN-OS displayed its Ethernet interfaces, but no backing virtual adapters existed, so the data-plane links remained down.</p>
+              <figure class="screenshot-card large my-4">
+                <img src="../assets/ot-lab/paloalto-three-zone-config/pa-vm102-before-nics.png" alt="Proxmox hardware view for PA-VM 102 before data adapters were added, showing only net0 on vmbr0" loading="lazy">
+                <figcaption><strong>Fault condition:</strong> management worked, but the VM had no NICs for the IT, OT, or IDMZ paths.</figcaption>
+              </figure>
+              <div class="table-responsive">
+                <table class="table align-middle">
+                  <thead><tr><th>Proxmox NIC</th><th>Bridge</th><th>PAN-OS mapping</th><th>Purpose</th></tr></thead>
+                  <tbody>
+                    <tr><td><code>net0</code></td><td><code>vmbr0</code></td><td>Management</td><td>Administrative access</td></tr>
+                    <tr><td><code>net1</code></td><td><code>vmbr1</code></td><td><code>ethernet1/1</code></td><td>IT</td></tr>
+                    <tr><td><code>net2</code></td><td><code>vmbr2</code></td><td><code>ethernet1/2</code></td><td>OT</td></tr>
+                    <tr><td><code>net3</code></td><td><code>vmbr3</code></td><td><code>ethernet1/3</code></td><td>IDMZ</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p>No new Linux bridges were required. With VM 102 shut down, three E1000 network devices were added and attached to the existing bridges. MAC-address comparison provides a reliable way to confirm interface order when adapter numbering is uncertain.</p>
+              <div class="status-panel my-4">
+                <h3 class="h5 mt-0">Duplicate-address control</h3>
+                <p class="mb-0">VM 101 remained powered off while VM 102 used the established interface addresses. The IT and OT transit networks are <code>/30</code> links with both usable addresses already occupied, so two independent active firewalls cannot share them without redesign.</p>
+              </div>
+            </section>
+
+            <hr class="my-5" id="panos">
+            <section>
+              <p class="section-label">Stage 2</p>
+              <h2>Build the PAN-OS data plane</h2>
+              <p>Three Layer 3 zones—<code>Zone-IT</code>, <code>Zone-OT</code>, and <code>Zone-IDMZ</code>—were created first. A virtual router named <code>VR-LAB</code> was then created and assigned all three Ethernet interfaces.</p>
+              <p>Each interface received its address, virtual router, zone, and a descriptive comment. After the configuration commit and activation of the adjacent devices, all three physical link indicators became green.</p>
+              <figure class="screenshot-card large my-4">
+                <img src="../assets/ot-lab/paloalto-three-zone-config/working-interfaces.png" alt="Palo Alto interface table showing ethernet1/1, ethernet1/2, and ethernet1/3 operational with IT, OT, and IDMZ addresses, VR-LAB, and security zones" loading="lazy">
+                <figcaption><strong>Data-plane checkpoint:</strong> all three interfaces are operational and assigned to <code>VR-LAB</code> and their intended zones.</figcaption>
+              </figure>
+              <p>The distinction between these objects is important: an address provides Layer 3 identity, the virtual router supplies forwarding decisions, and the zone supplies the boundary used by Security Policy.</p>
+            </section>
+
+            <hr class="my-5" id="management-profile">
+            <section>
+              <p class="section-label">Stage 3</p>
+              <h2>Permit only controlled interface testing</h2>
+              <p>An Interface Management Profile was created with only <strong>Ping</strong> enabled. The permitted entries identify the source systems allowed to ping the firewall interfaces; they are not the PA-VM destination addresses.</p>
+              <ul>
+                <li>IT router: <code>10.10.10.1/32</code></li>
+                <li>OT core: <code>10.20.10.2/32</code></li>
+                <li>IDMZ switch: <code>10.30.10.2/32</code></li>
+              </ul>
+              <figure class="screenshot-card large my-4">
+                <img src="../assets/ot-lab/paloalto-three-zone-config/interface-management-profile.png" alt="Palo Alto Interface Management Profile with Ping enabled and explicit permitted source addresses" loading="lazy">
+                <figcaption><strong>Least-privilege management:</strong> explicit <code>/32</code> entries limit the temporary test to named adjacent devices.</figcaption>
+              </figure>
+              <p>A packet sent to a PA interface is controlled by this profile. A packet forwarded through the firewall is instead evaluated by Security Policy. Keeping those two paths separate prevents misleading test results.</p>
+            </section>
+
+            <hr class="my-5" id="routing">
+            <section>
+              <p class="section-label">Stage 4</p>
+              <h2>Install forward and return routes</h2>
+              <p>PAN-OS automatically installs connected routes for the three interface networks. Static routes were required only for destinations beyond the adjacent routers.</p>
+              <h3 class="h5 mt-4">IT management route</h3>
+              <pre><code>Destination: 10.10.100.0/24
+Interface:   ethernet1/1
+Next hop:    10.10.10.1</code></pre>
+              <h3 class="h5 mt-4">OT VLAN routes</h3>
+              <p>The following networks use <code>ethernet1/2</code> and next hop <code>10.20.10.2</code>:</p>
+              <ul>
+                <li><code>10.110.10.0/24</code> — OT management</li>
+                <li><code>10.120.10.0/24</code> — OT Cell 1</li>
+                <li><code>10.130.10.0/24</code> — OT Cell 2</li>
+                <li><code>10.140.10.0/24</code> — OT services</li>
+                <li><code>10.190.10.0/24</code> — OT test lab</li>
+              </ul>
+              <p>The next hop is the adjacent Layer 3 device that can move the packet closer to the destination—not the firewall's own address. Return routing is equally important: the IT router points OT and IDMZ networks toward <code>10.10.10.2</code>, while the OT core points IT and IDMZ networks toward <code>10.20.10.1</code>.</p>
+            </section>
+
+            <hr class="my-5" id="policy">
+            <section>
+              <p class="section-label">Stage 5</p>
+              <h2>Start with an explicit temporary policy</h2>
+              <p>The first transit test used specific host addresses rather than an unrestricted rule:</p>
+              <pre><code>Source zone:        Zone-OT
+Source address:     10.20.10.2/32
+Destination zone:   Zone-IT
+Destination address: 10.10.10.1/32
+Application:        ping
+Service:            application-default
+Action:             allow
+Logging:            session end</code></pre>
+              <div class="row g-4 my-4">
+                <div class="col-md-6">
+                  <figure class="screenshot-card h-100">
+                    <img src="../assets/ot-lab/paloalto-three-zone-config/security-policy-source.png" alt="Palo Alto temporary security rule source showing Zone-OT and 10.20.10.2 slash 32" loading="lazy">
+                    <figcaption><strong>Source constraint:</strong> only the OT core transit address can initiate the test.</figcaption>
+                  </figure>
+                </div>
+                <div class="col-md-6">
+                  <figure class="screenshot-card h-100">
+                    <img src="../assets/ot-lab/paloalto-three-zone-config/security-policy-destination.png" alt="Palo Alto temporary security rule destination showing Zone-IT and 10.10.10.1 slash 32" loading="lazy">
+                    <figcaption><strong>Destination constraint:</strong> the rule targets only the IT router transit address.</figcaption>
+                  </figure>
+                </div>
+              </div>
+              <p>This rule does not permit an OT endpoint such as <code>10.120.10.100</code>. Endpoint validation should use a separate rule with that host as its explicit source. NAT is unnecessary for routing between these internal private lab networks.</p>
+            </section>
+
+            <hr class="my-5" id="validation">
+            <section>
+              <p class="section-label">Stage 6</p>
+              <h2>Validate in layers</h2>
+              <ol>
+                <li>Confirm the Proxmox adapters and bridge assignments.</li>
+                <li>Confirm the neighbouring router and switch ports are enabled.</li>
+                <li>Confirm all three PAN-OS links are green.</li>
+                <li>Ping each firewall interface from its directly connected neighbour.</li>
+                <li>Test the remote IT and OT networks after checking both forward and return routes.</li>
+                <li>Generate one authorised and one deliberately unauthorised inter-zone flow.</li>
+                <li>Use <strong>Monitor → Traffic</strong> to confirm the matching allow or deny rule.</li>
+              </ol>
+              <figure class="screenshot-card large my-4">
+                <img src="../assets/ot-lab/paloalto-three-zone-config/connectivity-validation.png" alt="PNETLab and Palo Alto validation view showing active firewall interfaces and successful pings from the IT router, OT core, and IDMZ switch" loading="lazy">
+                <figcaption><strong>Operational evidence:</strong> the three neighbours reach their corresponding firewall interfaces and PAN-OS reports active links.</figcaption>
+              </figure>
+              <p>The first ICMP request may be lost while ARP resolves the destination MAC address. Four replies from five immediately after a link comes up can therefore indicate successful connectivity rather than persistent loss.</p>
+            </section>
+
+            <hr class="my-5" id="lessons">
+            <section>
+              <p class="section-label">Engineering reflection</p>
+              <h2>Lessons learned</h2>
+              <div class="row g-4 mt-1">
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Check the hypervisor before PAN-OS</h3><p>A configured interface remains down when the VM has no corresponding virtual adapter.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Trace every abstraction</h3><p>The full path is PAN-OS interface → Proxmox NIC → Linux bridge → PNETLab adapter → cloud network → emulated device.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Separate interface access from transit policy</h3><p>Management profiles protect the firewall itself; Security Policy controls traffic forwarded between zones.</p></div></div>
+                <div class="col-md-6"><div class="feature-list-card"><h3 class="h5">Prove the return path</h3><p>A correct forward route cannot compensate for a missing route on the destination side.</p></div></div>
+              </div>
+              <p class="mt-4">The final configuration creates a repeatable boundary for future OT tests. More advanced work can now focus on application-aware rules, industrial protocol visibility, threat profiles, and controlled IT-to-OT service flows without rebuilding the underlying connectivity.</p>
+            </section>
+
+            <div class="contact-panel text-center mt-5">
+              <p class="section-label">Continue the series</p>
+              <h2 class="section-title mx-auto">From appliance deployment to validated segmentation.</h2>
+              <p class="text-secondary content-width mx-auto mt-3 mb-4">Read the installation guide first, then continue to the evidence-led OT-to-IDMZ policy validation.</p>
+              <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+                <a class="btn btn-outline-primary rounded-pill px-4" href="deploy-palo-alto-vm-series-on-proxmox.html">Part 1: deploy the firewall</a>
+                <a class="btn btn-primary rounded-pill px-4" href="ot-idmz-routing-policy-validation.html">Next: validate policy</a>
+              </div>
+            </div>
+          </article>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer class="py-4 border-top bg-white">
+    <div class="container d-flex flex-column flex-md-row justify-content-between gap-2 text-secondary small">
+      <span>© 2026 Raf Jablonsky Portfolio</span>
+      <a class="text-secondary" href="../docs.html">Documentation hub</a>
+    </div>
+  </footer>
+  <button class="back-to-top" type="button" aria-label="Back to top">↑ Top</button>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../script.js"></script>
+</body>
+</html>
