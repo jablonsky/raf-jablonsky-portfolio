@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Evidence-led validation of an authorised OT-to-IDMZ path and blocked unauthorised traffic in a Proxmox, PNETLab, and Palo Alto OT security lab.">
+  <meta name="description" content="Evidence-led validation of an authorised OT-to-IDMZ path, blocked unauthorised traffic, and the controlled transition of the lab firewall from PAN-OS 10 to PAN-OS 11.">
   <title>OT-to-IDMZ Routing and Firewall Policy Validation | Raf Jablonsky</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="../styles.css">
@@ -46,6 +46,7 @@
           <div class="docs-card docs-sidebar p-3">
             <a href="#question">Validation question</a>
             <a href="#architecture">Architecture</a>
+            <a href="#platform-update">PAN-OS 11 transition</a>
             <a href="#expected">Expected behaviour</a>
             <a href="#policy">Policy under test</a>
             <a href="#positive-test">Positive test</a>
@@ -71,8 +72,8 @@
               </div>
 
               <div class="status-panel my-4">
-                <span class="badge rounded-pill text-bg-success mb-3">Validation result: Pass</span>
-                <p class="mb-0">The selected OT Core address reached the selected IDMZ address. An IDMZ-initiated test and a test from an unauthorised OT endpoint were blocked as expected.</p>
+                <span class="badge rounded-pill text-bg-success mb-3">Original PAN-OS 10 validation: Pass</span>
+                <p class="mb-0">The selected OT Core address reached the selected IDMZ address. An IDMZ-initiated test and a test from an unauthorised OT endpoint were blocked as expected. These results remain the historical baseline and will be repeated on the replacement PAN-OS 11 firewall.</p>
               </div>
             </section>
 
@@ -97,12 +98,37 @@
                 </figure>
               </div>
 
-              <div class="screenshot-gallery my-4">
-                <figure class="screenshot-card large">
-                  <img src="../assets/ot-lab/routing-validation/ping-only-management-profile.png" alt="Palo Alto Ping-Only-Lab interface management profile permitting ICMP from defined private lab networks" loading="lazy">
-                  <figcaption><strong>Control-plane check:</strong> a lab-only management profile permits ping to selected firewall interfaces. This is separate from the inter-zone security rule that controls traffic passing through the firewall.</figcaption>
-                </figure>
+            </section>
+
+            <hr class="my-5" id="platform-update">
+            <section>
+              <p class="section-label">Controlled platform change · October 2026</p>
+              <h2>The lab firewall moved from PAN-OS 10 to PAN-OS 11</h2>
+              <p>The original routing and policy evidence in this article was captured on the PAN-OS 10 firewall. A problem with that virtual appliance image made it unsuitable as the continuing lab baseline, so the firewall was replaced with a new PAN-OS 11 PA-VM running as Proxmox VM 102.</p>
+              <p>This was a platform replacement rather than a topology redesign. The replacement firewall keeps the established bridge mapping, Layer&nbsp;3 addresses, <code>Zone-IT</code>, <code>Zone-OT</code>, <code>Zone-IDMZ</code>, <code>VR-LAB</code>, static routes, and narrowly scoped security-policy design. The old firewall remains powered off to prevent duplicate addressing.</p>
+              <div class="status-panel my-4">
+                <h3 class="h5 mt-0">Evidence boundary</h3>
+                <p class="mb-0">The screenshots and positive/negative policy results below remain valid evidence of the original PAN-OS 10 test. Successful interface tests on PAN-OS 11 prove that the replacement is connected, but the complete OT-to-IDMZ test set must be rerun before the migration itself is classified as fully validated.</p>
               </div>
+
+              <h3 class="h5 mt-4">A more explicit Interface Management Profile</h3>
+              <p>The PAN-OS 11 baseline also tightens control-plane testing. The earlier broad permitted networks are replaced with explicit <code>/32</code> source addresses for the adjacent infrastructure devices. This is an <strong>Interface Management Profile applied to data-plane interfaces</strong>; it is not the dedicated management interface.</p>
+              <div class="table-responsive my-4">
+                <table class="table align-middle">
+                  <thead><tr><th>Permitted source</th><th>Purpose</th></tr></thead>
+                  <tbody>
+                    <tr><td><code>10.10.10.1/32</code></td><td>IT router testing the IT-facing PA interface</td></tr>
+                    <tr><td><code>10.20.10.2/32</code></td><td>OT core testing the OT-facing PA interface</td></tr>
+                    <tr><td><code>10.30.10.2/32</code></td><td>IDMZ switch when ping testing of the IDMZ-facing PA interface is required</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <figure class="screenshot-card large my-4">
+                <img src="../assets/ot-lab/paloalto-three-zone-config/interface-management-profile.png" alt="PAN-OS 11 Interface Management Profile allowing ping from explicit IT router and OT core host addresses" loading="lazy">
+                <figcaption><strong>Recorded PAN-OS 11 profile:</strong> the captured configuration permits the IT router and OT core as explicit <code>/32</code> sources. The same host-specific pattern is used for the IDMZ source when that interface test is enabled.</figcaption>
+              </figure>
+              <p>A ping addressed to a firewall interface is controlled by this profile. A ping passing through the firewall is controlled by Security Policy. Tightening the management profile therefore does not replace or broaden the inter-zone rule being validated.</p>
+              <p>See the complete replacement and data-plane procedure in <a href="configure-palo-alto-three-zone-ot-lab.html">Configuring Palo Alto VM-Series for a Three-Zone OT Lab</a>.</p>
             </section>
 
             <hr class="my-5" id="expected">
@@ -173,7 +199,7 @@
             <hr class="my-5" id="results">
             <section>
               <p class="section-label">Observed evidence</p>
-              <h2>Validation results</h2>
+              <h2>Original PAN-OS 10 validation results</h2>
               <div class="table-responsive my-4">
                 <table class="table table-bordered align-middle">
                   <thead class="table-light">
@@ -186,7 +212,7 @@
                   </tbody>
                 </table>
               </div>
-              <p><strong>Overall classification:</strong> Pass within the defined ICMP test scope.</p>
+              <p><strong>Overall classification:</strong> Pass within the defined ICMP test scope on the original PAN-OS 10 firewall. Migration validation remains open until the same matrix is repeated on PAN-OS 11.</p>
             </section>
 
             <hr class="my-5" id="conclusion">
@@ -197,16 +223,19 @@
               <p>The result is deliberately narrow. It validates ICMP behaviour for the documented addresses; it does not yet prove application-layer controls, all routing-table entries, every possible OT/IDMZ path, or production performance. Those limits are part of the conclusion rather than hidden behind a successful test.</p>
               <div class="status-panel mt-4">
                 <h3 class="h5 mt-0">What the evidence proves</h3>
-                <p class="mb-0">A specific OT source and IDMZ destination can communicate using the explicitly authorised test application, while selected unauthorised variations remain blocked.</p>
+                <p class="mb-0">A specific OT source and IDMZ destination communicated using the explicitly authorised test application on the PAN-OS 10 baseline, while selected unauthorised variations were blocked. The PAN-OS 11 configuration preserves that intent but requires a fresh evidence run.</p>
               </div>
             </section>
 
             <hr class="my-5" id="next-step">
             <section>
               <p class="section-label">Next validation step</p>
-              <h2>Move from diagnostic traffic to one realistic IDMZ service</h2>
-              <p>The next test will replace ICMP with a defined application flow, such as HTTPS, syslog, or a controlled update service. The rule will specify one source, one destination, and one required port.</p>
+              <h2>Revalidate PAN-OS 11, then move to a realistic IDMZ service</h2>
+              <p>The immediate next step is to repeat the existing positive and negative ICMP matrix on PAN-OS 11. Once equivalence is demonstrated, the following test will replace ICMP with a defined application flow, such as HTTPS, syslog, or a controlled update service.</p>
               <ol>
+                <li>Repeat OT Core → IDMZ and confirm the explicit permit.</li>
+                <li>Repeat IDMZ → OT and the unauthorised OT-source test.</li>
+                <li>Correlate all three results with PAN-OS 11 traffic logs and rule hit counts.</li>
                 <li>Deploy or identify the IDMZ service endpoint.</li>
                 <li>Record the required source, destination, application, and port.</li>
                 <li>Test the authorised connection.</li>
@@ -214,15 +243,15 @@
                 <li>Attempt an unauthorised service from the approved source.</li>
                 <li>Correlate endpoint output with firewall logs, rule hit counts, and a packet capture.</li>
               </ol>
-              <p>This will extend the current routing and policy checkpoint into application-aware, evidence-led IDMZ validation suitable for a later LinkedIn progress article.</p>
+              <p>This sequence keeps the image migration and the later application-policy experiment as two separate engineering claims, each supported by its own evidence.</p>
             </section>
 
             <div class="contact-panel text-center mt-5">
               <p class="section-label">Continue exploring</p>
               <h2 class="section-title mx-auto">Follow the OT Network Lab validation series.</h2>
-              <p class="text-secondary content-width mx-auto mt-3 mb-4">Review the earlier infrastructure baseline or return to the full OT Network Lab case study.</p>
+              <p class="text-secondary content-width mx-auto mt-3 mb-4">Review the PAN-OS 11 configuration guide or return to the full OT Network Lab case study.</p>
               <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
-                <a class="btn btn-primary rounded-pill px-4" href="proxmox-ot-security-lab-progress.html">Proxmox lab baseline</a>
+                <a class="btn btn-primary rounded-pill px-4" href="configure-palo-alto-three-zone-ot-lab.html">PAN-OS 11 configuration</a>
                 <a class="btn btn-outline-primary rounded-pill px-4" href="ot-network-architecture-lab.html">OT Network Lab overview</a>
               </div>
             </div>
