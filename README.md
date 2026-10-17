@@ -21,6 +21,7 @@ The site is focused on:
 - `docs.html` — technical documentation and LinkedIn article planning hub
 - `projects/ot-segmentation-architecture-concepts.html` — OT segmentation architecture comparison and test plan
 - `projects/ot-l3-core-acl-baseline.html` — PNETLab OT Layer 3 core implementation, validation, and ACL baseline
+- `projects/ot-idmz-routing-policy-validation.html` — OT-to-IDMZ routing and firewall-policy validation with positive and negative tests
 - `styles.css` — shared Bootstrap-based visual design
 - `script.js` — small page interactions
 - `assets/` — images, diagrams, screenshots, and future portfolio assets
@@ -32,6 +33,7 @@ The site is focused on:
 - NetSafe Auditor
 - OT Network Lab
 - Proxmox OT Security Lab progress article with PNETLab and Palo Alto evidence
+- OT-to-IDMZ validation article with a permitted OT Core flow and blocked unauthorised variations
 - OT segmentation architecture study comparing Layer 3 core ACLs with firewall-hosted VLAN gateways
 - Smart Factory / OT Security Lab direction
 
@@ -50,4 +52,5 @@ The site is focused on:
 - `projects/netsafe-auditor.html`
 - `projects/ot-network-architecture-lab.html`
 - `projects/proxmox-ot-security-lab-progress.html`
+- `projects/ot-idmz-routing-policy-validation.html`
 - `projects/ot-segmentation-architecture-concepts.html`

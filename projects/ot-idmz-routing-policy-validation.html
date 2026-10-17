@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Evidence-led validation of an authorised OT-to-IDMZ path and blocked unauthorised traffic in a Proxmox, PNETLab, and Palo Alto OT security lab.">
+  <title>OT-to-IDMZ Routing and Firewall Policy Validation | Raf Jablonsky</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+  <script defer src="https://cloud.umami.is/script.js" data-website-id="f44f6cb3-d78f-4c6e-9200-2f1eda223114"></script>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
+    <div class="container py-2">
+      <a class="navbar-brand fw-bold" href="../index.html">Raf Jablonsky<span class="brand-dot">.</span></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+          <li class="nav-item"><a class="nav-link" href="../index.html#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="../profile.html">Profile</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#capabilities">Capabilities</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#projects">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="../index.html#strategy">Strategy</a></li>
+          <li class="nav-item"><a class="nav-link" href="../docs.html">Docs</a></li>
+          <li class="nav-item"><a class="btn btn-primary rounded-pill px-4" href="../index.html#contact">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <header class="docs-hero">
+    <div class="container">
+      <a class="text-secondary text-decoration-none" href="proxmox-ot-security-lab-progress.html">← Previous Proxmox lab update</a>
+      <p class="section-label mt-4">Validation Edition · 17 October 2026</p>
+      <h1 class="section-title">Validating OT-to-IDMZ Routing and Firewall Policy</h1>
+      <p class="lead text-secondary mt-4 content-width">A controlled positive-and-negative test showing that one authorised OT source can reach the industrial DMZ while reverse initiation and an unauthorised OT source remain blocked.</p>
+    </div>
+  </header>
+
+  <main class="section-padding">
+    <div class="container">
+      <div class="row g-4">
+        <aside class="col-lg-3">
+          <div class="docs-card docs-sidebar p-3">
+            <a href="#question">Validation question</a>
+            <a href="#architecture">Architecture</a>
+            <a href="#expected">Expected behaviour</a>
+            <a href="#policy">Policy under test</a>
+            <a href="#positive-test">Positive test</a>
+            <a href="#negative-tests">Negative tests</a>
+            <a href="#results">Results</a>
+            <a href="#conclusion">Conclusion</a>
+            <a href="#next-step">Next validation</a>
+          </div>
+        </aside>
+
+        <section class="col-lg-9">
+          <article class="docs-card docs-content p-4 p-lg-5">
+            <section id="question">
+              <p class="section-label">The problem</p>
+              <h2>Can one required OT-to-IDMZ path work without creating broad access?</h2>
+              <p class="fs-5">A diagram and a set of firewall zones do not prove segmentation. The lab needed observed evidence that a deliberately authorised flow would succeed and that closely related but unauthorised flows would fail.</p>
+              <p>The test focused on ICMP because it provides a simple, repeatable way to validate addressing, routing, stateful return traffic, and security-policy selection. It is a connectivity checkpoint rather than a claim that the production-style application design is complete.</p>
+
+              <div class="row g-3 my-4">
+                <div class="col-md-4"><div class="mini-stat"><strong>1 allowed</strong><span>OT Core → IDMZ</span></div></div>
+                <div class="col-md-4"><div class="mini-stat"><strong>2 denied</strong><span>Reverse and unauthorised</span></div></div>
+                <div class="col-md-4"><div class="mini-stat"><strong>Pass</strong><span>Within the ICMP scope</span></div></div>
+              </div>
+
+              <div class="status-panel my-4">
+                <span class="badge rounded-pill text-bg-success mb-3">Validation result: Pass</span>
+                <p class="mb-0">The selected OT Core address reached the selected IDMZ address. An IDMZ-initiated test and a test from an unauthorised OT endpoint were blocked as expected.</p>
+              </div>
+            </section>
+
+            <hr class="my-5" id="architecture">
+            <section>
+              <p class="section-label">Lab architecture involved</p>
+              <h2>Three zones, one firewall control point</h2>
+              <p>The PNETLab topology connects the IT, industrial DMZ, and OT networks to separate Layer&nbsp;3 interfaces on a Palo Alto VM-Series firewall. The OT Core reaches the firewall over the <code>10.20.10.0/30</code> transit, while the IDMZ switch uses the <code>10.30.10.0/24</code> segment.</p>
+              <figure class="screenshot-card large my-4">
+                <img src="../assets/ot-lab/routing-validation/topology.png" alt="PNETLab topology showing IT, IDMZ, and OT networks connected to a Palo Alto firewall with OT VLAN endpoints" loading="lazy">
+                <figcaption><strong>Test topology:</strong> the Palo Alto firewall is the inter-zone control point between the OT Core and the IDMZ destination.</figcaption>
+              </figure>
+
+              <div class="screenshot-gallery my-4">
+                <figure class="screenshot-card">
+                  <img src="../assets/ot-lab/routing-validation/firewall-interfaces.png" alt="Palo Alto Layer 3 interface table showing IT, OT, and IDMZ addresses, zones, and the VR-LAB virtual router" loading="lazy">
+                  <figcaption><strong>Firewall interfaces:</strong> <code>ethernet1/2</code> terminates the OT transit and <code>ethernet1/3</code> terminates the IDMZ network inside <code>VR-LAB</code>.</figcaption>
+                </figure>
+                <figure class="screenshot-card">
+                  <img src="../assets/ot-lab/routing-validation/firewall-zones.png" alt="Palo Alto zone table listing Zone-IDMZ, Zone-IT, and Zone-OT with their assigned interfaces" loading="lazy">
+                  <figcaption><strong>Zone separation:</strong> the IDMZ, IT, and OT interfaces belong to distinct Layer&nbsp;3 security zones.</figcaption>
+                </figure>
+              </div>
+
+              <div class="screenshot-gallery my-4">
+                <figure class="screenshot-card large">
+                  <img src="../assets/ot-lab/routing-validation/ping-only-management-profile.png" alt="Palo Alto Ping-Only-Lab interface management profile permitting ICMP from defined private lab networks" loading="lazy">
+                  <figcaption><strong>Control-plane check:</strong> a lab-only management profile permits ping to selected firewall interfaces. This is separate from the inter-zone security rule that controls traffic passing through the firewall.</figcaption>
+                </figure>
+              </div>
+            </section>
+
+            <hr class="my-5" id="expected">
+            <section>
+              <p class="section-label">Acceptance criteria</p>
+              <h2>Define the expected result before testing</h2>
+              <ul>
+                <li><strong>Authorised flow:</strong> OT Core <code>10.20.10.2</code> can ping IDMZ destination <code>10.30.10.2</code>.</li>
+                <li><strong>Stateful return traffic:</strong> replies associated with the authorised session can return to the source.</li>
+                <li><strong>Reverse initiation:</strong> the IDMZ cannot initiate a new ICMP session towards the OT network.</li>
+                <li><strong>Source restriction:</strong> another OT endpoint, <code>10.110.10.100</code>, cannot use the OT Core's specific allow rule.</li>
+              </ul>
+              <p>This combination matters because a successful ping alone could be produced by an overly broad rule. The negative tests provide evidence that the source and direction restrictions are meaningful.</p>
+            </section>
+
+            <hr class="my-5" id="policy">
+            <section>
+              <p class="section-label">Configuration being validated</p>
+              <h2>A narrowly scoped OT-to-IDMZ test rule</h2>
+              <p>The policy table contains an explicit rule named <code>test-OT-to-IDMZ-ping</code>. It permits the <code>ping</code> application from the OT zone using source <code>10.20.10.2/32</code> to the IDMZ zone using destination <code>10.30.10.2/32</code>. A following OT-to-IDMZ deny rule and the default inter-zone deny behaviour prevent broader communication.</p>
+              <figure class="screenshot-card large my-4">
+                <img src="../assets/ot-lab/routing-validation/security-policies.png" alt="Palo Alto security-policy table showing explicit IT and OT ping rules followed by deny rules and the default inter-zone deny" loading="lazy">
+                <figcaption><strong>Rule order:</strong> specific test permits appear above explicit and default deny controls, and the hit counters provide additional evidence that traffic is reaching the policy engine.</figcaption>
+              </figure>
+
+              <div class="screenshot-gallery my-4">
+                <figure class="screenshot-card">
+                  <img src="../assets/ot-lab/routing-validation/ot-idmz-rule-source.png" alt="Palo Alto rule source tab showing Zone-OT and source address 10.20.10.2 slash 32" loading="lazy">
+                  <figcaption><strong>Source scope:</strong> the rule matches <code>Zone-OT</code> and only the OT Core address <code>10.20.10.2/32</code>.</figcaption>
+                </figure>
+                <figure class="screenshot-card">
+                  <img src="../assets/ot-lab/routing-validation/ot-idmz-rule-destination.png" alt="Palo Alto rule destination tab showing Zone-IDMZ and destination address 10.30.10.2 slash 32" loading="lazy">
+                  <figcaption><strong>Destination scope:</strong> the rule targets <code>Zone-IDMZ</code> and only <code>10.30.10.2/32</code>.</figcaption>
+                </figure>
+              </div>
+            </section>
+
+            <hr class="my-5" id="positive-test">
+            <section>
+              <p class="section-label">Positive test</p>
+              <h2>The authorised OT Core flow succeeds</h2>
+              <p>The OT Core initiated five ICMP echo requests to the IDMZ switch address. All five replies returned, producing a 100% success result with a reported round-trip time of 1&nbsp;ms in the virtual lab.</p>
+              <figure class="screenshot-card large my-4">
+                <img src="../assets/ot-lab/routing-validation/authorised-ot-idmz-ping.png" alt="PNETLab topology and OT Core console showing a successful five out of five ping result to IDMZ address 10.30.10.2" loading="lazy">
+                <figcaption><strong>Authorised path:</strong> <code>10.20.10.2 → 10.30.10.2</code> completes successfully through the explicit OT-to-IDMZ policy.</figcaption>
+              </figure>
+              <p>This result proves that the selected forward path, security rule, and stateful return path work for the tested ICMP session. It does not mean every OT source or application has access to the IDMZ.</p>
+            </section>
+
+            <hr class="my-5" id="negative-tests">
+            <section>
+              <p class="section-label">Negative tests</p>
+              <h2>Closely related but unauthorised traffic remains blocked</h2>
+              <p>Two negative tests were used to challenge the rule boundaries. First, the IDMZ switch attempted to initiate traffic towards the OT transit address. Second, an OT management endpoint with address <code>10.110.10.100</code> attempted to reach the same IDMZ destination.</p>
+              <div class="screenshot-gallery my-4">
+                <figure class="screenshot-card">
+                  <img src="../assets/ot-lab/routing-validation/reverse-direction-blocked.png" alt="IDMZ switch console showing failed attempts towards the OT network while the OT Core can reach the IDMZ destination" loading="lazy">
+                  <figcaption><strong>Direction enforced:</strong> an IDMZ-initiated session towards OT is denied, while the separately authorised OT-initiated session succeeds.</figcaption>
+                </figure>
+                <figure class="screenshot-card">
+                  <img src="../assets/ot-lab/routing-validation/unauthorised-source-blocked.png" alt="VPC-110 console showing address 10.110.10.100, successful gateway reachability, and timeouts when pinging IDMZ address 10.30.10.2" loading="lazy">
+                  <figcaption><strong>Source enforced:</strong> VPC-110 can reach its upstream gateway but times out when targeting the IDMZ, showing that general OT reachability does not inherit the OT Core's permit.</figcaption>
+                </figure>
+              </div>
+              <p>The gateway response in the second test is important: it separates local OT connectivity from the blocked inter-zone flow. The endpoint is operational, but it does not match the specific source permitted by the firewall rule.</p>
+            </section>
+
+            <hr class="my-5" id="results">
+            <section>
+              <p class="section-label">Observed evidence</p>
+              <h2>Validation results</h2>
+              <div class="table-responsive my-4">
+                <table class="table table-bordered align-middle">
+                  <thead class="table-light">
+                    <tr><th scope="col">Test</th><th scope="col">Expected</th><th scope="col">Observed</th><th scope="col">Result</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>OT Core → IDMZ</td><td>Permitted</td><td>5/5 ICMP replies</td><td><span class="badge text-bg-success">Pass</span></td></tr>
+                    <tr><td>IDMZ → OT</td><td>Denied</td><td>ICMP session failed</td><td><span class="badge text-bg-success">Pass</span></td></tr>
+                    <tr><td>Unauthorised OT endpoint → IDMZ</td><td>Denied</td><td>Gateway reachable; IDMZ ping timed out</td><td><span class="badge text-bg-success">Pass</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p><strong>Overall classification:</strong> Pass within the defined ICMP test scope.</p>
+            </section>
+
+            <hr class="my-5" id="conclusion">
+            <section>
+              <p class="section-label">Engineering conclusion</p>
+              <h2>Segmentation is demonstrated through behaviour, not labels</h2>
+              <p>The collected evidence shows that the firewall is enforcing the intended source and direction restrictions for this test. The permitted OT Core session crosses the security boundary successfully, while reverse initiation and a different OT source are denied.</p>
+              <p>The result is deliberately narrow. It validates ICMP behaviour for the documented addresses; it does not yet prove application-layer controls, all routing-table entries, every possible OT/IDMZ path, or production performance. Those limits are part of the conclusion rather than hidden behind a successful test.</p>
+              <div class="status-panel mt-4">
+                <h3 class="h5 mt-0">What the evidence proves</h3>
+                <p class="mb-0">A specific OT source and IDMZ destination can communicate using the explicitly authorised test application, while selected unauthorised variations remain blocked.</p>
+              </div>
+            </section>
+
+            <hr class="my-5" id="next-step">
+            <section>
+              <p class="section-label">Next validation step</p>
+              <h2>Move from diagnostic traffic to one realistic IDMZ service</h2>
+              <p>The next test will replace ICMP with a defined application flow, such as HTTPS, syslog, or a controlled update service. The rule will specify one source, one destination, and one required port.</p>
+              <ol>
+                <li>Deploy or identify the IDMZ service endpoint.</li>
+                <li>Record the required source, destination, application, and port.</li>
+                <li>Test the authorised connection.</li>
+                <li>Repeat from an unauthorised source.</li>
+                <li>Attempt an unauthorised service from the approved source.</li>
+                <li>Correlate endpoint output with firewall logs, rule hit counts, and a packet capture.</li>
+              </ol>
+              <p>This will extend the current routing and policy checkpoint into application-aware, evidence-led IDMZ validation suitable for a later LinkedIn progress article.</p>
+            </section>
+
+            <div class="contact-panel text-center mt-5">
+              <p class="section-label">Continue exploring</p>
+              <h2 class="section-title mx-auto">Follow the OT Network Lab validation series.</h2>
+              <p class="text-secondary content-width mx-auto mt-3 mb-4">Review the earlier infrastructure baseline or return to the full OT Network Lab case study.</p>
+              <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+                <a class="btn btn-primary rounded-pill px-4" href="proxmox-ot-security-lab-progress.html">Proxmox lab baseline</a>
+                <a class="btn btn-outline-primary rounded-pill px-4" href="ot-network-architecture-lab.html">OT Network Lab overview</a>
+              </div>
+            </div>
+          </article>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer class="py-4 border-top bg-white">
+    <div class="container d-flex flex-column flex-md-row justify-content-between gap-2 text-secondary small">
+      <span>© 2026 Raf Jablonsky Portfolio</span>
+      <a class="text-secondary" href="../docs.html">Back to documentation</a>
+    </div>
+  </footer>
+
+  <button class="back-to-top" type="button" aria-label="Back to top">↑ Top</button>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../script.js"></script>
+</body>
+</html>
