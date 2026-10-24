@@ -272,6 +272,11 @@ body {
   color: rgba(255,255,255,0.82);
   background: rgba(255,255,255,0.08);
   font-weight: 750;
+  text-decoration: none;
+}
+.inventory-repo-status:hover {
+  color: #ffffff;
+  background: rgba(255,255,255,0.16);
 }
 .inventory-hero-facts {
   display: grid;
