@@ -1,21 +1,179 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Spanning Tree Protocol: from L2 fundamentals to OT resilience - Network and OT Engineering Knowledge Base">
-<title>Spanning Tree Protocol: from L2 fundamentals to OT resilience | Raf Jablonsky</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"><link rel="stylesheet" href="../styles.css"></head>
-<body><nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom"><div class="container py-3"><a class="navbar-brand fw-bold" href="../index.html">Raf Jablonsky<span class="brand-dot">.</span></a><div class="d-flex gap-3"><a href="../docs.html">Docs</a><a href="index.html">Knowledge Base</a></div></div></nav>
-<header class="docs-hero"><div class="container"><p class="section-label">Network &amp; OT Engineering Knowledge Base</p><h1 class="section-title">Spanning Tree Protocol: from L2 fundamentals to OT resilience</h1></div></header><main class="section-padding"><div class="container"><div class="row justify-content-center"><div class="col-lg-10"><article class="docs-card docs-content p-4 p-lg-5"><p class="lead">This revised article restores the original learning path, visual topologies and Cisco commands while correcting explanations and connecting Layer 2 resilience to industrial networking.</p>
-<p class="small text-secondary">Revised 25 October 2026 · Network Foundations / Switching &amp; Routing · Original article reconstructed with supplied PDF and illustrations · <strong>Evidence note:</strong> reproduced historical CLI examples are marked separately from proposed future lab tests.</p>
-<h2>1. Why Layer 2 redundancy needs STP</h2><p>Three interconnected switches form a physical triangle. Redundancy provides an alternate path if a connection fails, but an active Ethernet loop can cause storms of flooded frames, MAC-address flapping and repeated frame delivery. Unlike IP, Ethernet does not include a hop-limit that automatically stops circulation.</p>
-<figure class="my-4"><div class="border rounded-3 bg-white p-2 text-center"><img src="assets/originals/stp-1.svg" alt="Original spanning tree lab figure 1: physical switching topology" loading="lazy" decoding="async" style="width:100%;max-height:740px;object-fit:contain"/></div><figcaption class="small text-secondary mt-2">Original STP article illustration 1 — physical switching topology. Preserved from the author's source material.</figcaption></figure>
-<p>When PC1 sends a broadcast toward Switch 3, that frame can be replicated towards Switches 1 and 2. With all three inter-switch links forwarding, copies can return around the triangle in both directions. This illustration deliberately simplifies the replication mechanism: the precise behaviour depends on the frame and switch configuration.</p>
-<figure class="my-4"><div class="border rounded-3 bg-white p-2 text-center"><img src="assets/originals/stp-2.svg" alt="Original spanning tree lab figure 2: broadcast loop scenario" loading="lazy" decoding="async" style="width:100%;max-height:740px;object-fit:contain"/></div><figcaption class="small text-secondary mt-2">Original STP article illustration 2 — broadcast loop scenario. Preserved from the author's source material.</figcaption></figure>
-<h2>2. Spanning Tree Algorithm: the loop-free logical topology</h2><p>Spanning Tree Protocol uses Bridge Protocol Data Units (BPDUs) to elect one root bridge, select each non-root switch's root port and determine designated ports for shared segments. A redundant port is prevented from forwarding user data while remaining available for topology recovery. A non-forwarding STP port can still receive and process BPDUs.</p>
-<figure class="my-4"><div class="border rounded-3 bg-white p-2 text-center"><img src="assets/originals/stp-3.svg" alt="Original spanning tree lab figure 3: STP link blocking" loading="lazy" decoding="async" style="width:100%;max-height:740px;object-fit:contain"/></div><figcaption class="small text-secondary mt-2">Original STP article illustration 3 — STP link blocking. Preserved from the author's source material.</figcaption></figure>
-<p>In this example Switch 1 is the root bridge. Both links from the root operate as designated paths, Switch 2 and Switch 3 choose root ports toward it, and Switch 3's Fa0/2 is the redundant non-forwarding path toward Switch 2. The exact location of the blocking port depends on bridge IDs, costs and tie-breakers, not simply on the physical drawing.</p>
-<figure class="my-4"><div class="border rounded-3 bg-white p-2 text-center"><img src="assets/originals/stp-6.svg" alt="Original spanning tree lab figure 6: original Cisco spanning-tree CLI evidence" loading="lazy" decoding="async" style="width:100%;max-height:740px;object-fit:contain"/></div><figcaption class="small text-secondary mt-2">Original STP article illustration 6 — original Cisco spanning-tree CLI evidence. Preserved from the author's source material.</figcaption></figure><h2>3. Root bridge election and CLI inspection</h2><p>The lowest bridge identifier (BID) wins. With a system ID extension, the bridge priority field includes a configurable priority component and a VLAN identifier; a MAC address resolves remaining ties. Root selection should be engineered: avoid leaving important topologies dependent on an arbitrary MAC-address tie-breaker.</p>
-<p>Below is the original <code>show spanning-tree</code> example reproduced as text from the supplied article. It shows Switch 1 as root for VLAN 1. The 32769 reported priority reflects 32768 base priority plus VLAN ID 1.</p>
-<pre class="border rounded-3 p-3" style="background:#131b23;color:#e6f3f9;white-space:pre-wrap;overflow-wrap:anywhere"><code>Switch-1#show spanning-tree
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Spanning Tree Protocol: from L2 fundamentals to OT resilience - Network and OT Engineering Knowledge Base"
+    />
+    <title>
+      Spanning Tree Protocol: from L2 fundamentals to OT resilience | Raf
+      Jablonsky
+    </title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+      <div class="container py-3">
+        <a class="navbar-brand fw-bold" href="../index.html"
+          >Raf Jablonsky<span class="brand-dot">.</span></a
+        >
+        <div class="d-flex gap-3">
+          <a href="../docs.html">Docs</a><a href="index.html">Knowledge Base</a>
+        </div>
+      </div>
+    </nav>
+    <header class="docs-hero">
+      <div class="container">
+        <p class="section-label">Network &amp; OT Engineering Knowledge Base</p>
+        <h1 class="section-title">
+          Spanning Tree Protocol: from L2 fundamentals to OT resilience
+        </h1>
+      </div>
+    </header>
+    <main class="section-padding">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-10">
+            <article class="docs-card docs-content p-4 p-lg-5">
+              <p class="lead">
+                This revised article restores the original learning path, visual
+                topologies and Cisco commands while correcting explanations and
+                connecting Layer 2 resilience to industrial networking.
+              </p>
+              <p class="small text-secondary">
+                Revised 25 October 2026 · Network Foundations / Switching &amp;
+                Routing · Original article reconstructed with supplied PDF and
+                illustrations · <strong>Evidence note:</strong> reproduced
+                historical CLI examples are marked separately from proposed
+                future lab tests.
+              </p>
+              <h2>1. Why Layer 2 redundancy needs STP</h2>
+              <p>
+                Three interconnected switches form a physical triangle.
+                Redundancy provides an alternate path if a connection fails, but
+                an active Ethernet loop can cause storms of flooded frames,
+                MAC-address flapping and repeated frame delivery. Unlike IP,
+                Ethernet does not include a hop-limit that automatically stops
+                circulation.
+              </p>
+              <figure class="my-4">
+                <div class="border rounded-3 bg-white p-2 text-center">
+                  <img
+                    src="assets/originals/stp-1.svg"
+                    alt="Original spanning tree lab figure 1: physical switching topology"
+                    loading="lazy"
+                    decoding="async"
+                    style="width: 100%; max-height: 740px; object-fit: contain"
+                  />
+                </div>
+                <figcaption class="small text-secondary mt-2">
+                  Original STP article illustration 1 — physical switching
+                  topology. Preserved from the author's source material.
+                </figcaption>
+              </figure>
+              <p>
+                When PC1 sends a broadcast toward Switch 3, that frame can be
+                replicated towards Switches 1 and 2. With all three inter-switch
+                links forwarding, copies can return around the triangle in both
+                directions. This illustration deliberately simplifies the
+                replication mechanism: the precise behaviour depends on the
+                frame and switch configuration.
+              </p>
+              <figure class="my-4">
+                <div class="border rounded-3 bg-white p-2 text-center">
+                  <img
+                    src="assets/originals/stp-2.svg"
+                    alt="Original spanning tree lab figure 2: broadcast loop scenario"
+                    loading="lazy"
+                    decoding="async"
+                    style="width: 100%; max-height: 740px; object-fit: contain"
+                  />
+                </div>
+                <figcaption class="small text-secondary mt-2">
+                  Original STP article illustration 2 — broadcast loop scenario.
+                  Preserved from the author's source material.
+                </figcaption>
+              </figure>
+              <h2>
+                2. Spanning Tree Algorithm: the loop-free logical topology
+              </h2>
+              <p>
+                Spanning Tree Protocol uses Bridge Protocol Data Units (BPDUs)
+                to elect one root bridge, select each non-root switch's root
+                port and determine designated ports for shared segments. A
+                redundant port is prevented from forwarding user data while
+                remaining available for topology recovery. A non-forwarding STP
+                port can still receive and process BPDUs.
+              </p>
+              <figure class="my-4">
+                <div class="border rounded-3 bg-white p-2 text-center">
+                  <img
+                    src="assets/originals/stp-3.svg"
+                    alt="Original spanning tree lab figure 3: STP link blocking"
+                    loading="lazy"
+                    decoding="async"
+                    style="width: 100%; max-height: 740px; object-fit: contain"
+                  />
+                </div>
+                <figcaption class="small text-secondary mt-2">
+                  Original STP article illustration 3 — STP link blocking.
+                  Preserved from the author's source material.
+                </figcaption>
+              </figure>
+              <p>
+                In this example Switch 1 is the root bridge. Both links from the
+                root operate as designated paths, Switch 2 and Switch 3 choose
+                root ports toward it, and Switch 3's Fa0/2 is the redundant
+                non-forwarding path toward Switch 2. The exact location of the
+                blocking port depends on bridge IDs, costs and tie-breakers, not
+                simply on the physical drawing.
+              </p>
+              <figure class="my-4">
+                <div class="border rounded-3 bg-white p-2 text-center">
+                  <img
+                    src="assets/originals/stp-6.svg"
+                    alt="Original spanning tree lab figure 6: original Cisco spanning-tree CLI evidence"
+                    loading="lazy"
+                    decoding="async"
+                    style="width: 100%; max-height: 740px; object-fit: contain"
+                  />
+                </div>
+                <figcaption class="small text-secondary mt-2">
+                  Original STP article illustration 6 — original Cisco
+                  spanning-tree CLI evidence. Preserved from the author's source
+                  material.
+                </figcaption>
+              </figure>
+              <h2>3. Root bridge election and CLI inspection</h2>
+              <p>
+                The lowest bridge identifier (BID) wins. With a system ID
+                extension, the bridge priority field includes a configurable
+                priority component and a VLAN identifier; a MAC address resolves
+                remaining ties. Root selection should be engineered: avoid
+                leaving important topologies dependent on an arbitrary
+                MAC-address tie-breaker.
+              </p>
+              <p>
+                Below is the original <code>show spanning-tree</code> example
+                reproduced as text from the supplied article. It shows Switch 1
+                as root for VLAN 1. The 32769 reported priority reflects 32768
+                base priority plus VLAN ID 1.
+              </p>
+              <pre
+                class="border rounded-3 p-3"
+                style="
+                  background: #131b23;
+                  color: #e6f3f9;
+                  white-space: pre-wrap;
+                  overflow-wrap: anywhere;
+                "
+              ><code>Switch-1#show spanning-tree
 VLAN0001
   Spanning tree enabled protocol ieee
   Root ID    Priority    32769
@@ -30,49 +188,393 @@ Interface        Role Sts Cost      Prio.Nbr Type
 ---------------- ---- --- --------- -------- ----------------
 Fa0/2            Desg FWD 19        128.2    P2p
 Fa0/1            Desg FWD 19        128.1    P2p</code></pre>
-<p><strong>How to read it:</strong> <code>Root ID</code> identifies the elected root; <code>Bridge ID</code> identifies the local switch; <code>Desg FWD</code> indicates a designated forwarding port; <code>Cost</code> is the spanning-tree port cost. This is a historical example from the original paper, not a newly captured verification result.</p>
-<h2>4. Root path cost and tie-breakers</h2><p>Each non-root switch chooses the port offering the lowest total cost back to the root. The original example compares a direct cost of 5 from Switch 3 to Switch 1 with a two-hop cost of 4 + 4 = 8 via Switch 2. These are <strong>illustrative manually assigned costs</strong>: do not confuse them with standard default costs for a given interface speed.</p>
-<figure class="my-4"><div class="border rounded-3 bg-white p-2 text-center"><img src="assets/originals/stp-7.svg" alt="Original spanning tree lab figure 7: root path-cost illustration" loading="lazy" decoding="async" style="width:100%;max-height:740px;object-fit:contain"/></div><figcaption class="small text-secondary mt-2">Original STP article illustration 7 — root path-cost illustration. Preserved from the author's source material.</figcaption></figure>
-<p>Where total path costs tie, comparison continues through designated (sender) bridge ID, designated port ID and receiving port ID, according to STP's ordered decision criteria.</p>
-<h3>Common reference path costs</h3>
-<div class="table-responsive my-3"><table class="table table-bordered table-striped small"><thead class="table-light"><tr><th scope="col">Link speed</th><th scope="col">Short path-cost method</th><th scope="col">Long path-cost method</th></tr></thead><tbody><tr><td>10 Mb/s</td><td>100</td><td>2,000,000</td></tr><tr><td>100 Mb/s</td><td>19</td><td>200,000</td></tr><tr><td>1 Gb/s</td><td>4</td><td>20,000</td></tr><tr><td>10 Gb/s</td><td>2</td><td>2,000</td></tr><tr><td>100 Gb/s</td><td>Not represented in classic short method</td><td>200</td></tr><tr><td>1 Tb/s</td><td>Not represented in classic short method</td><td>20</td></tr></tbody></table></div>
-<p class="small text-secondary">Historical reference values from the original article. Platform defaults and configured path-cost method must be verified on the device.</p>
-<figure class="my-4"><div class="border rounded-3 bg-white p-2 text-center"><img src="assets/originals/stp-8.svg" alt="Original spanning tree lab figure 8: original STP reference table / illustration" loading="lazy" decoding="async" style="width:100%;max-height:740px;object-fit:contain"/></div><figcaption class="small text-secondary mt-2">Original STP article illustration 8 — original STP reference table / illustration. Preserved from the author's source material.</figcaption></figure><h2>5. Convergence and the difference between STP and RSTP</h2>
-<div class="table-responsive my-3"><table class="table table-bordered table-striped small"><thead class="table-light"><tr><th scope="col">Classic STP state</th><th scope="col">Learns MACs?</th><th scope="col">Forwards user frames?</th><th scope="col">Purpose</th></tr></thead><tbody><tr><td>Blocking</td><td>No</td><td>No</td><td>Prevents an active loop; processes BPDUs</td></tr><tr><td>Listening</td><td>No</td><td>No</td><td>Participates in topology calculations</td></tr><tr><td>Learning</td><td>Yes</td><td>No</td><td>Populates forwarding information</td></tr><tr><td>Forwarding</td><td>Yes</td><td>Yes</td><td>Carries user traffic</td></tr><tr><td>Disabled</td><td>No</td><td>No</td><td>Administratively or operationally inactive</td></tr></tbody></table></div>
-<p>Classic STP's familiar listening and learning phases commonly use 15 seconds each under default timer settings; the total interruption during topology change depends on the event and prior state and should not be presented as a fixed 50-second interval. RSTP (IEEE 802.1w) introduces faster transitions with <strong>discarding, learning and forwarding</strong> states plus explicit port roles. RSTP retains learning; it does not remove it.</p>
-<div class="table-responsive my-3"><table class="table table-bordered table-striped small"><thead class="table-light"><tr><th scope="col">Protocol / Cisco mode</th><th scope="col">Tree model</th><th scope="col">Important distinction</th></tr></thead><tbody><tr><td>Classic STP / CST</td><td>One common tree</td><td>Traditional IEEE 802.1D operation</td></tr><tr><td>PVST+</td><td>One tree per VLAN</td><td>Cisco per-VLAN spanning-tree implementation</td></tr><tr><td>RSTP</td><td>One rapid tree</td><td>IEEE 802.1w rapid mechanisms</td></tr><tr><td>Rapid PVST+</td><td>One rapid tree per VLAN</td><td>Cisco per-VLAN rapid operation</td></tr><tr><td>MSTP / MST</td><td>VLANs mapped to MST instances</td><td>Multiple VLANs can share a spanning-tree instance</td></tr></tbody></table></div>
-<h2>6. Per-VLAN spanning trees</h2><p>In Cisco PVST+ / Rapid PVST+, different VLANs can select different root bridges and link paths. The original paper illustrates VLAN 10 and VLAN 20 with differing root placement and blocked paths. This is load distribution between VLANs, not per-flow balancing inside a single VLAN.</p>
-<figure class="my-4"><div class="border rounded-3 bg-white p-2 text-center"><img src="assets/originals/stp-5.svg" alt="Original spanning tree lab figure 5: root and port-role concept" loading="lazy" decoding="async" style="width:100%;max-height:740px;object-fit:contain"/></div><figcaption class="small text-secondary mt-2">Original STP article illustration 5 — root and port-role concept. Preserved from the author's source material.</figcaption></figure>
-<h2>7. Cisco configuration: restored command reference</h2><p>Commands below use Cisco IOS-style syntax and require a platform supporting the named mode. Replace VLAN numbers and interface identifiers with the lab's actual configuration.</p>
-<h3>Choose the spanning-tree mode</h3>
-<pre class="border rounded-3 p-3" style="background:#131b23;color:#e6f3f9;white-space:pre-wrap;overflow-wrap:anywhere"><code>Switch(config)# spanning-tree mode ?
+              <p>
+                <strong>How to read it:</strong> <code>Root ID</code> identifies
+                the elected root; <code>Bridge ID</code> identifies the local
+                switch; <code>Desg FWD</code> indicates a designated forwarding
+                port; <code>Cost</code> is the spanning-tree port cost. This is
+                a historical example from the original paper, not a newly
+                captured verification result.
+              </p>
+              <h2>4. Root path cost and tie-breakers</h2>
+              <p>
+                Each non-root switch chooses the port offering the lowest total
+                cost back to the root. The original example compares a direct
+                cost of 5 from Switch 3 to Switch 1 with a two-hop cost of 4 + 4
+                = 8 via Switch 2. These are
+                <strong>illustrative manually assigned costs</strong>: do not
+                confuse them with standard default costs for a given interface
+                speed.
+              </p>
+              <figure class="my-4">
+                <div class="border rounded-3 bg-white p-2 text-center">
+                  <img
+                    src="assets/originals/stp-7.svg"
+                    alt="Original spanning tree lab figure 7: root path-cost illustration"
+                    loading="lazy"
+                    decoding="async"
+                    style="width: 100%; max-height: 740px; object-fit: contain"
+                  />
+                </div>
+                <figcaption class="small text-secondary mt-2">
+                  Original STP article illustration 7 — root path-cost
+                  illustration. Preserved from the author's source material.
+                </figcaption>
+              </figure>
+              <p>
+                Where total path costs tie, comparison continues through
+                designated (sender) bridge ID, designated port ID and receiving
+                port ID, according to STP's ordered decision criteria.
+              </p>
+              <h3>Common reference path costs</h3>
+              <div class="table-responsive my-3">
+                <table class="table table-bordered table-striped small">
+                  <thead class="table-light">
+                    <tr>
+                      <th scope="col">Link speed</th>
+                      <th scope="col">Short path-cost method</th>
+                      <th scope="col">Long path-cost method</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>10 Mb/s</td>
+                      <td>100</td>
+                      <td>2,000,000</td>
+                    </tr>
+                    <tr>
+                      <td>100 Mb/s</td>
+                      <td>19</td>
+                      <td>200,000</td>
+                    </tr>
+                    <tr>
+                      <td>1 Gb/s</td>
+                      <td>4</td>
+                      <td>20,000</td>
+                    </tr>
+                    <tr>
+                      <td>10 Gb/s</td>
+                      <td>2</td>
+                      <td>2,000</td>
+                    </tr>
+                    <tr>
+                      <td>100 Gb/s</td>
+                      <td>Not represented in classic short method</td>
+                      <td>200</td>
+                    </tr>
+                    <tr>
+                      <td>1 Tb/s</td>
+                      <td>Not represented in classic short method</td>
+                      <td>20</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="small text-secondary">
+                Historical reference values from the original article. Platform
+                defaults and configured path-cost method must be verified on the
+                device.
+              </p>
+              <figure class="my-4">
+                <div class="border rounded-3 bg-white p-2 text-center">
+                  <img
+                    src="assets/originals/stp-8.svg"
+                    alt="Original spanning tree lab figure 8: original STP reference table / illustration"
+                    loading="lazy"
+                    decoding="async"
+                    style="width: 100%; max-height: 740px; object-fit: contain"
+                  />
+                </div>
+                <figcaption class="small text-secondary mt-2">
+                  Original STP article illustration 8 — original STP reference
+                  table / illustration. Preserved from the author's source
+                  material.
+                </figcaption>
+              </figure>
+              <h2>5. Convergence and the difference between STP and RSTP</h2>
+              <div class="table-responsive my-3">
+                <table class="table table-bordered table-striped small">
+                  <thead class="table-light">
+                    <tr>
+                      <th scope="col">Classic STP state</th>
+                      <th scope="col">Learns MACs?</th>
+                      <th scope="col">Forwards user frames?</th>
+                      <th scope="col">Purpose</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Blocking</td>
+                      <td>No</td>
+                      <td>No</td>
+                      <td>Prevents an active loop; processes BPDUs</td>
+                    </tr>
+                    <tr>
+                      <td>Listening</td>
+                      <td>No</td>
+                      <td>No</td>
+                      <td>Participates in topology calculations</td>
+                    </tr>
+                    <tr>
+                      <td>Learning</td>
+                      <td>Yes</td>
+                      <td>No</td>
+                      <td>Populates forwarding information</td>
+                    </tr>
+                    <tr>
+                      <td>Forwarding</td>
+                      <td>Yes</td>
+                      <td>Yes</td>
+                      <td>Carries user traffic</td>
+                    </tr>
+                    <tr>
+                      <td>Disabled</td>
+                      <td>No</td>
+                      <td>No</td>
+                      <td>Administratively or operationally inactive</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p>
+                Classic STP's familiar listening and learning phases commonly
+                use 15 seconds each under default timer settings; the total
+                interruption during topology change depends on the event and
+                prior state and should not be presented as a fixed 50-second
+                interval. RSTP (IEEE 802.1w) introduces faster transitions with
+                <strong>discarding, learning and forwarding</strong> states plus
+                explicit port roles. RSTP retains learning; it does not remove
+                it.
+              </p>
+              <div class="table-responsive my-3">
+                <table class="table table-bordered table-striped small">
+                  <thead class="table-light">
+                    <tr>
+                      <th scope="col">Protocol / Cisco mode</th>
+                      <th scope="col">Tree model</th>
+                      <th scope="col">Important distinction</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Classic STP / CST</td>
+                      <td>One common tree</td>
+                      <td>Traditional IEEE 802.1D operation</td>
+                    </tr>
+                    <tr>
+                      <td>PVST+</td>
+                      <td>One tree per VLAN</td>
+                      <td>Cisco per-VLAN spanning-tree implementation</td>
+                    </tr>
+                    <tr>
+                      <td>RSTP</td>
+                      <td>One rapid tree</td>
+                      <td>IEEE 802.1w rapid mechanisms</td>
+                    </tr>
+                    <tr>
+                      <td>Rapid PVST+</td>
+                      <td>One rapid tree per VLAN</td>
+                      <td>Cisco per-VLAN rapid operation</td>
+                    </tr>
+                    <tr>
+                      <td>MSTP / MST</td>
+                      <td>VLANs mapped to MST instances</td>
+                      <td>Multiple VLANs can share a spanning-tree instance</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <h2>6. Per-VLAN spanning trees</h2>
+              <p>
+                In Cisco PVST+ / Rapid PVST+, different VLANs can select
+                different root bridges and link paths. The original paper
+                illustrates VLAN 10 and VLAN 20 with differing root placement
+                and blocked paths. This is load distribution between VLANs, not
+                per-flow balancing inside a single VLAN.
+              </p>
+              <figure class="my-4">
+                <div class="border rounded-3 bg-white p-2 text-center">
+                  <img
+                    src="assets/originals/stp-5.svg"
+                    alt="Original spanning tree lab figure 5: root and port-role concept"
+                    loading="lazy"
+                    decoding="async"
+                    style="width: 100%; max-height: 740px; object-fit: contain"
+                  />
+                </div>
+                <figcaption class="small text-secondary mt-2">
+                  Original STP article illustration 5 — root and port-role
+                  concept. Preserved from the author's source material.
+                </figcaption>
+              </figure>
+              <h2>7. Cisco configuration: restored command reference</h2>
+              <p>
+                Commands below use Cisco IOS-style syntax and require a platform
+                supporting the named mode. Replace VLAN numbers and interface
+                identifiers with the lab's actual configuration.
+              </p>
+              <h3>Choose the spanning-tree mode</h3>
+              <pre
+                class="border rounded-3 p-3"
+                style="
+                  background: #131b23;
+                  color: #e6f3f9;
+                  white-space: pre-wrap;
+                  overflow-wrap: anywhere;
+                "
+              ><code>Switch(config)# spanning-tree mode ?
   pvst         Per-VLAN spanning tree mode
   rapid-pvst   Per-VLAN rapid spanning tree mode
   mst          Multiple spanning tree mode
 
 Switch(config)# spanning-tree mode rapid-pvst
 Switch# show spanning-tree summary</code></pre>
-<p><strong>Correction:</strong> the keyword is <code>rapid-pvst</code> without a trailing plus sign, even though the protocol is commonly called Rapid PVST+.</p>
-<h3>Configure deliberate root placement</h3>
-<pre class="border rounded-3 p-3" style="background:#131b23;color:#e6f3f9;white-space:pre-wrap;overflow-wrap:anywhere"><code>Switch-1(config)# spanning-tree vlan 10 priority 4096
+              <p>
+                <strong>Correction:</strong> the keyword is
+                <code>rapid-pvst</code> without a trailing plus sign, even
+                though the protocol is commonly called Rapid PVST+.
+              </p>
+              <h3>Configure deliberate root placement</h3>
+              <pre
+                class="border rounded-3 p-3"
+                style="
+                  background: #131b23;
+                  color: #e6f3f9;
+                  white-space: pre-wrap;
+                  overflow-wrap: anywhere;
+                "
+              ><code>Switch-1(config)# spanning-tree vlan 10 priority 4096
 Switch-1(config)# spanning-tree vlan 10 root primary
 Switch-2(config)# spanning-tree vlan 10 root secondary
 
 Switch-1# show spanning-tree vlan 10
 Switch-1# show spanning-tree summary</code></pre>
-<p>Setting <code>priority 4096</code> directly and using <code>root primary</code> are alternative ways of setting or influencing priority; do not blindly apply both. The macro-style root commands choose values based on the current topology and software behaviour. Configure base priorities in increments of 4096 where extended system ID applies.</p>
-<figure class="my-4"><div class="border rounded-3 bg-white p-2 text-center"><img src="assets/originals/stp-4.svg" alt="Original spanning tree lab figure 4: root bridge illustration" loading="lazy" decoding="async" style="width:100%;max-height:740px;object-fit:contain"/></div><figcaption class="small text-secondary mt-2">Original STP article illustration 4 — root bridge illustration. Preserved from the author's source material.</figcaption></figure>
-<p>For VLAN 10, a configured base priority of 4096 can be displayed as <strong>4106</strong> in <code>show spanning-tree vlan 10</code> because the system ID extension contributes VLAN ID 10.</p>
-<h3>Verify ports and root selection</h3>
-<pre class="border rounded-3 p-3" style="background:#131b23;color:#e6f3f9;white-space:pre-wrap;overflow-wrap:anywhere"><code>Switch-1# show spanning-tree
+              <p>
+                Setting <code>priority 4096</code> directly and using
+                <code>root primary</code> are alternative ways of setting or
+                influencing priority; do not blindly apply both. The macro-style
+                root commands choose values based on the current topology and
+                software behaviour. Configure base priorities in increments of
+                4096 where extended system ID applies.
+              </p>
+              <figure class="my-4">
+                <div class="border rounded-3 bg-white p-2 text-center">
+                  <img
+                    src="assets/originals/stp-4.svg"
+                    alt="Original spanning tree lab figure 4: root bridge illustration"
+                    loading="lazy"
+                    decoding="async"
+                    style="width: 100%; max-height: 740px; object-fit: contain"
+                  />
+                </div>
+                <figcaption class="small text-secondary mt-2">
+                  Original STP article illustration 4 — root bridge
+                  illustration. Preserved from the author's source material.
+                </figcaption>
+              </figure>
+              <p>
+                For VLAN 10, a configured base priority of 4096 can be displayed
+                as <strong>4106</strong> in
+                <code>show spanning-tree vlan 10</code> because the system ID
+                extension contributes VLAN ID 10.
+              </p>
+              <h3>Verify ports and root selection</h3>
+              <pre
+                class="border rounded-3 p-3"
+                style="
+                  background: #131b23;
+                  color: #e6f3f9;
+                  white-space: pre-wrap;
+                  overflow-wrap: anywhere;
+                "
+              ><code>Switch-1# show spanning-tree
 Switch-1# show spanning-tree vlan 10
 Switch-1# show spanning-tree interface fa0/1 detail
 Switch-1# show spanning-tree summary
 Switch-1# show interfaces trunk</code></pre>
-<p><strong>Original evidence:</strong> the PDF shows Cisco <code>show spanning-tree</code> and per-VLAN output, plus root-priority configuration examples. The consolidated commands here are edited for readable syntax rather than presented as a fresh lab capture.</p>
-<h2>8. Why this matters for OT networks</h2><p>Convergence is not just a networking performance metric when traffic supports PLC-to-HMI communication, supervision or operational monitoring. Validate recovery against the application tolerances and maintenance constraints. STP/RSTP prevents bridging loops, but it does not itself enforce security segmentation. For some industrial designs, vendor-supported redundancy technologies such as MRP, PRP or HSR may better meet recovery requirements.</p>
-<h3>A measurable follow-on lab (not yet performed)</h3><ol><li>Build the three-switch triangle in an isolated lab and record actual software and VLAN configuration.</li><li>Capture root and interface-role output for VLAN 10 and VLAN 20.</li><li>Introduce a controlled uplink failure and measure frame loss and recovery time over repeated trials.</li><li>Compare classic STP and Rapid PVST+ where the devices support both, and record limitations.</li><li>Connect findings to network change control and availability requirements without generalising beyond the test setup.</li></ol>
-<h2>Engineering conclusion</h2><p>Redundant cables only create the <em>possibility</em> of resilience. Predictable industrial network behaviour depends on the chosen loop-prevention mechanism, intentional bridge placement, failure testing and knowledge of the connected applications.</p>
-<hr class="my-4"><p><strong>Original source:</strong> <a href="https://sites.google.com/view/jablonsky-docs/technical-insights/articles/stp-introduction">DOCS Hub — Introduction to STP</a> (archived article, 18-page PDF supplied by author). Original screenshots and illustrations have been restored from the author's archive; technical language has been modernised.</p>
-<p><strong>Related portfolio work:</strong> <a href="../projects/ot-network-architecture-lab.html">OT Network Lab</a> · <a href="../projects/ot-segmentation-architecture-concepts.html">OT segmentation design study</a>.</p></article></div></div></div></main>
-<footer class="py-4 border-top"><div class="container small text-secondary">© 2026 Raf Jablonsky · <a href="../docs.html">Documentation</a></div></footer><button class="back-to-top" type="button" aria-label="Back to top">↑ Top</button><script src="../script.js"></script></body></html>
+              <p>
+                <strong>Original evidence:</strong> the PDF shows Cisco
+                <code>show spanning-tree</code> and per-VLAN output, plus
+                root-priority configuration examples. The consolidated commands
+                here are edited for readable syntax rather than presented as a
+                fresh lab capture.
+              </p>
+              <h2>8. Why this matters for OT networks</h2>
+              <p>
+                Convergence is not just a networking performance metric when
+                traffic supports PLC-to-HMI communication, supervision or
+                operational monitoring. Validate recovery against the
+                application tolerances and maintenance constraints. STP/RSTP
+                prevents bridging loops, but it does not itself enforce security
+                segmentation. For some industrial designs, vendor-supported
+                redundancy technologies such as MRP, PRP or HSR may better meet
+                recovery requirements.
+              </p>
+              <h3>A measurable follow-on lab (not yet performed)</h3>
+              <ol>
+                <li>
+                  Build the three-switch triangle in an isolated lab and record
+                  actual software and VLAN configuration.
+                </li>
+                <li>
+                  Capture root and interface-role output for VLAN 10 and VLAN
+                  20.
+                </li>
+                <li>
+                  Introduce a controlled uplink failure and measure frame loss
+                  and recovery time over repeated trials.
+                </li>
+                <li>
+                  Compare classic STP and Rapid PVST+ where the devices support
+                  both, and record limitations.
+                </li>
+                <li>
+                  Connect findings to network change control and availability
+                  requirements without generalising beyond the test setup.
+                </li>
+              </ol>
+              <h2>Engineering conclusion</h2>
+              <p>
+                Redundant cables only create the <em>possibility</em> of
+                resilience. Predictable industrial network behaviour depends on
+                the chosen loop-prevention mechanism, intentional bridge
+                placement, failure testing and knowledge of the connected
+                applications.
+              </p>
+              <hr class="my-4" />
+              <p>
+                <strong>Original source:</strong>
+                <a
+                  href="https://sites.google.com/view/jablonsky-docs/technical-insights/articles/stp-introduction"
+                  >DOCS Hub — Introduction to STP</a
+                >
+                (archived article, 18-page PDF supplied by author). Original
+                screenshots and illustrations have been restored from the
+                author's archive; technical language has been modernised.
+              </p>
+              <p>
+                <strong>Related portfolio work:</strong>
+                <a href="../projects/ot-network-architecture-lab.html"
+                  >OT Network Lab</a
+                >
+                ·
+                <a href="../projects/ot-segmentation-architecture-concepts.html"
+                  >OT segmentation design study</a
+                >.
+              </p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </main>
+    <footer class="py-4 border-top">
+      <div class="container small text-secondary">
+        © 2026 Raf Jablonsky · <a href="../docs.html">Documentation</a>
+      </div>
+    </footer>
+    <button class="back-to-top" type="button" aria-label="Back to top">
+      ↑ Top
+    </button>
+    <script src="../script.js"></script>
+  </body>
+</html>
